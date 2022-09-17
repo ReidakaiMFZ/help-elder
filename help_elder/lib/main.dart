@@ -18,24 +18,61 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.black,
         ),
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Login',
+            // const SizedBox(
+            //   height: 70,
+            //   width: 70,
+            // ),
+            SizedBox(
+              width: 300,
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'CPF',
+                ),
               ),
             ),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Password',
+            SizedBox(
+              width: 300,
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Senha',
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 300,
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Confirmar Senha',
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 300,
+              child: Row(
+                children:[
+                  Checkbox(
+                    value: true,
+                    onChanged: (bool? value) {},
+                    checkColor: Color.fromARGB(255, 81, 241, 228),
+                    activeColor: Color.fromARGB(255, 81, 105, 241),
+                  ),
+                  Text('Eu li e concordo com os Termos')
+                ],
+
               ),
             ),
             ElevatedButton(
-              child: const Text('Login'),
+              child: const Text('Cadastrar'),
               onPressed: () {
-                Navigator.pushNamed(context, '/home');
+                // Navigator.pushNamed(context, '/home');
               },
             ),
           ],
+
         ),
       ),
     );
