@@ -35,7 +35,7 @@ class CadastroResp extends StatelessWidget {
                     SizedBox(
                       height: 30,
                     ),
-                    Text('Faça cadastro como responsável de alguém'),
+                    Text('Faça cadastro como cuidador de alguém'),
                     SizedBox(
                       height: 30,
                     ),
