@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class Login extends StatelessWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +28,7 @@ class MyApp extends StatelessWidget {
             ElevatedButton(
               child: const Text('Login'),
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.pushNamed(context, '/home');
               },
             ),
