@@ -3,14 +3,12 @@ import 'package:flutter/gestures.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
-
 class CadastroResp extends StatelessWidget {
   const CadastroResp({Key? key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
@@ -28,103 +26,100 @@ class CadastroResp extends StatelessWidget {
         )
       ],
     );
-    
+
     return MaterialApp(
       home: Scaffold(
-        body:
-          SizedBox(
-            width: 500,
-            height: 1000,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
+        body: SizedBox(
+          width: 500,
+          height: 1000,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
                   width: 300,
-                  child: Column(
-                    children: const [
-                      Text('Cadastro',
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  child: Column(children: const [
+                    Text(
+                      'Cadastro',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                      Text('Faça cadastro como responsável de alguém'),
-                      SizedBox(
-                        height: 30,
-                      ),
-                    ]
-                    )
-                ),
-                SizedBox(
-                  width: 300,
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'E-mail',
                     ),
-                    controller: emailController,
-
-                  ),
-                ),
-                SizedBox(
-                  width: 300,
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Senha',
+                    SizedBox(
+                      height: 30,
                     ),
-                    controller: passController,
-                  ),
-                ),
-                SizedBox(
-                  width: 300,
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      labelText: 'Confirmar Senha',
+                    Text('Faça cadastro como responsável de alguém'),
+                    SizedBox(
+                      height: 30,
                     ),
-                    controller: confirmPassController,
+                  ])),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'E-mail',
                   ),
+                  controller: emailController,
                 ),
-                SizedBox(
-                  width: 300,
-                  child: Row(
-                    children:[
-                      Checkbox(
-                        value: false,
-                        onChanged: (bool? value) {},
-                        checkColor: const Color.fromARGB(255, 81, 241, 228),
-                        activeColor: const Color.fromARGB(255, 81, 105, 241),
-                      ),
-                      const Text('Eu li e concordo com os Termos')
-                    ],
-
+              ),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Senha',
                   ),
+                  controller: passController,
                 ),
-                const SizedBox(
-                  height: 50,
+              ),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Confirmar Senha',
+                  ),
+                  controller: confirmPassController,
                 ),
-                SizedBox(
-                  width: 250,
-                  child: ElevatedButton(
+              ),
+              SizedBox(
+                width: 300,
+                child: Row(
+                  children: [
+                    Checkbox(
+                      value: false,
+                      onChanged: (bool? value) {},
+                      checkColor: const Color.fromARGB(255, 81, 241, 228),
+                      activeColor: const Color.fromARGB(255, 81, 105, 241),
+                    ),
+                    const Text('Eu li e concordo com os Termos')
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+              SizedBox(
+                width: 250,
+                child: ElevatedButton(
                   child: const Text('Cadastrar'),
                   onPressed: () {
-                    if (emailController.text.isNotEmpty && passController.text.isNotEmpty && passController.text == confirmPassController.text) {
-                      auth.createUserWithEmailAndPassword(
+                    if (emailController.text.isNotEmpty &&
+                        passController.text.isNotEmpty &&
+                        passController.text == confirmPassController.text) {
+                      auth
+                          .createUserWithEmailAndPassword(
                         email: emailController.text,
                         password: passController.text,
                       )
-                      .then((UserCredential user) {
+                          .then((UserCredential user) {
                         db.collection("responsavel").doc(user.user!.uid).set({
                           'email': emailController.text,
                         });
                       });
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');
-                    }
-                    else{
+                    } else {
                       print("Erro");
                       showDialog(
                         context: context,
@@ -135,39 +130,37 @@ class CadastroResp extends StatelessWidget {
                     }
                   },
                 ),
-                ),
-                const SizedBox(
-                  height: 50,
-                ),
-                RichText(
-                  text:TextSpan(
-                    children: [
-                      const TextSpan(
-                        text: 'Já tem cadastro? ',
-                        style: TextStyle(
-                          color: Colors.black,
-                        ),
+              ),
+              const SizedBox(
+                height: 50,
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    const TextSpan(
+                      text: 'Já tem cadastro? ',
+                      style: TextStyle(
+                        color: Colors.black,
                       ),
-                      TextSpan(
-                        text: "Faça login",
-                        style: const TextStyle(
-                          color: Colors.blue,
-                        ),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, '/login');
-                          },      
+                    ),
+                    TextSpan(
+                      text: "Faça login",
+                      style: const TextStyle(
+                        color: Colors.blue,
                       ),
-                    ],
-                  ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.pop(context);
+                          Navigator.pushNamed(context, '/login');
+                        },
+                    ),
+                  ],
                 ),
-              ],
-
-            ),
-
+              ),
+            ],
           ),
-          backgroundColor: const Color.fromARGB(255, 175, 223, 255),
+        ),
+        backgroundColor: const Color.fromARGB(225, 235, 249, 255),
       ),
     );
   }

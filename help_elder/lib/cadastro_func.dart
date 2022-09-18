@@ -27,23 +27,22 @@ class CadastroFunc extends StatelessWidget {
         )
       ],
     );
-    
+
     return MaterialApp(
       home: Scaffold(
-        body:
-          SizedBox(
-            width: 500,
-            height: 1000,
-            child: Column(
+        body: SizedBox(
+          width: 500,
+          height: 1000,
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(
-                width: 300,
-                child: Column(
-                  children: const [
-                    Text('Cadastro',
+                  width: 300,
+                  child: Column(children: const [
+                    Text(
+                      'Cadastro',
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -56,9 +55,7 @@ class CadastroFunc extends StatelessWidget {
                     SizedBox(
                       height: 30,
                     ),
-                  ]
-                  )
-              ),
+                  ])),
               SizedBox(
                 width: 300,
                 child: TextField(
@@ -98,7 +95,6 @@ class CadastroFunc extends StatelessWidget {
                     ),
                     const Text('Eu li e concordo com os Termos')
                   ],
-
                 ),
               ),
               const SizedBox(
@@ -107,36 +103,39 @@ class CadastroFunc extends StatelessWidget {
               SizedBox(
                 width: 250,
                 child: ElevatedButton(
-                child: const Text('Cadastrar'),
-                onPressed: () {
-                  if (emailController.text.isNotEmpty && passController.text.isNotEmpty && passController.text == confirmPassController.text) {
-                    auth.createUserWithEmailAndPassword(
-                        email: emailController.text, 
-                        password: passController.text
-                      )
-                      .then((UserCredential user) => {
-                          db.collection("funcionario").doc(user.user!.uid).set({"email": emailController.text})
-                        }
+                  child: const Text('Cadastrar'),
+                  onPressed: () {
+                    if (emailController.text.isNotEmpty &&
+                        passController.text.isNotEmpty &&
+                        passController.text == confirmPassController.text) {
+                      auth
+                          .createUserWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passController.text)
+                          .then((UserCredential user) => {
+                                db
+                                    .collection("funcionario")
+                                    .doc(user.user!.uid)
+                                    .set({"email": emailController.text})
+                              });
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, '/home');
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return alert;
+                        },
                       );
-                    Navigator.pop(context);
-                    Navigator.pushNamed(context, '/home');
-                  }
-                  else {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return alert;
-                      },
-                    );
-                  }
-                },
-              ),
+                    }
+                  },
+                ),
               ),
               const SizedBox(
                 height: 50,
               ),
               RichText(
-                text:TextSpan(
+                text: TextSpan(
                   children: [
                     const TextSpan(
                       text: 'Já tem cadastro? ',
@@ -153,17 +152,15 @@ class CadastroFunc extends StatelessWidget {
                         ..onTap = () {
                           Navigator.pop(context);
                           Navigator.pushNamed(context, '/login');
-                        },      
+                        },
                     ),
                   ],
                 ),
               ),
             ],
-
           ),
-
-          ),
-          backgroundColor: const Color.fromARGB(255, 175, 223, 255),
+        ),
+        backgroundColor: const Color.fromARGB(225, 235, 249, 255),
       ),
     );
   }

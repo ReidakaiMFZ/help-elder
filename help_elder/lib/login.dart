@@ -27,6 +27,7 @@ class Login extends StatelessWidget {
 
     return MaterialApp(
       home: Scaffold(
+        backgroundColor: const Color.fromARGB(225, 235, 249, 255),
         appBar: AppBar(
           title: const Text('Help Elder'),
           backgroundColor: Colors.black,
@@ -35,34 +36,32 @@ class Login extends StatelessWidget {
           children: [
             TextField(
               decoration: const InputDecoration(
-                labelText: 'Login',
+                labelText: 'Email',
               ),
               controller: emailController,
             ),
             TextField(
               decoration: const InputDecoration(
-                labelText: 'Password',
+                labelText: 'Senha',
               ),
               controller: passController,
             ),
             ElevatedButton(
               child: const Text('Login'),
               onPressed: () {
-                auth.signInWithEmailAndPassword(
-                  email: emailController.text,
-                  password: passController.text
-                ).then(
-                  (x) => {
-                    Navigator.pop(context),
-                    Navigator.pushNamed(context, '/home')
-                  }
-                )
-                .catchError(
-                  (e) => {
-                    showDialog(context: context, builder: (BuildContext context) => alert)
-                  }
-                );
-                
+                auth
+                    .signInWithEmailAndPassword(
+                        email: emailController.text,
+                        password: passController.text)
+                    .then((x) => {
+                          Navigator.pop(context),
+                          Navigator.pushNamed(context, '/home')
+                        })
+                    .catchError((e) => {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) => alert)
+                        });
               },
             ),
           ],
