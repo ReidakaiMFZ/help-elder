@@ -28,41 +28,118 @@ class Login extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         backgroundColor: const Color.fromARGB(225, 235, 249, 255),
-        appBar: AppBar(
-          title: const Text('Help Elder'),
-          backgroundColor: Colors.black,
-        ),
         body: Column(
           children: [
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Email',
+            SizedBox(
+              height: 150,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    'Login',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-              controller: emailController,
             ),
-            TextField(
-              decoration: const InputDecoration(
-                labelText: 'Senha',
+            SizedBox(height: 10),
+            SizedBox(
+              height: 80,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text('Faça login como cuidador/responsável de alguém',
+                      style: TextStyle(
+                        fontSize: 15,
+                      )),
+                ],
               ),
-              controller: passController,
             ),
-            ElevatedButton(
-              child: const Text('Login'),
-              onPressed: () {
-                auth
-                    .signInWithEmailAndPassword(
-                        email: emailController.text,
-                        password: passController.text)
-                    .then((x) => {
-                          Navigator.pop(context),
-                          Navigator.pushNamed(context, '/home')
-                        })
-                    .catchError((e) => {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) => alert)
-                        });
-              },
+            SizedBox(
+              width: 350,
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                ),
+                controller: emailController,
+              ),
+            ),
+            SizedBox(
+              width: 350,
+              child: TextField(
+                decoration: const InputDecoration(
+                  labelText: 'Senha',
+                ),
+                controller: passController,
+              ),
+            ),
+            SizedBox(
+              height: 100,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 250,
+                    child: ElevatedButton(
+                      style: (ElevatedButton.styleFrom(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                        ),
+                      )),
+                      child: const Text('Login',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      onPressed: () {
+                        auth
+                            .signInWithEmailAndPassword(
+                                email: emailController.text,
+                                password: passController.text)
+                            .then((x) => {
+                                  Navigator.pop(context),
+                                  Navigator.pushNamed(context, '/home')
+                                })
+                            .catchError((e) => {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) => alert)
+                                });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: 150,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  TextButton(
+                    child: const Text('Esqueceu a Senha?',
+                        style: TextStyle(fontSize: 15)),
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/esqueci_senha');
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('Não tem uma conta?'),
+                TextButton(
+                  child: const Text('Cadastre-se'),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/cadResp');
+                  },
+                ),
+              ],
             ),
           ],
         ),
