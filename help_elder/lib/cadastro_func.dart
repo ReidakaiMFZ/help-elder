@@ -63,7 +63,7 @@ class CadastroFunc extends StatelessWidget {
                 width: 300,
                 child: TextField(
                   decoration: const InputDecoration(
-                    labelText: 'CPF',
+                    labelText: 'E-mail',
                   ),
                   controller: emailController,
                 ),
