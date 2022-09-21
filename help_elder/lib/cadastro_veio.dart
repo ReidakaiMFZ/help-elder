@@ -6,8 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
-class CadastroResp extends StatelessWidget {
-  const CadastroResp({Key? key}) : super(key: key);
+class CadastroVeio extends StatelessWidget {
+  const CadastroVeio({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +50,7 @@ class CadastroResp extends StatelessWidget {
                     SizedBox(
                       height: 30,
                     ),
-                    Text('Faça cadastro como responsável de alguém'),
+                    Text('Faça cadastro de um idoso'),
                     SizedBox(
                       height: 30,
                     ),
@@ -59,7 +59,7 @@ class CadastroResp extends StatelessWidget {
                 width: 300,
                 child: TextField(
                   decoration: const InputDecoration(
-                    labelText: 'E-mail',
+                    labelText: 'Nome',
                   ),
                   controller: emailController,
                 ),
@@ -68,7 +68,7 @@ class CadastroResp extends StatelessWidget {
                 width: 300,
                 child: TextField(
                   decoration: const InputDecoration(
-                    labelText: 'Senha',
+                    labelText: 'CPF',
                   ),
                   controller: passController,
                 ),
@@ -77,7 +77,7 @@ class CadastroResp extends StatelessWidget {
                 width: 300,
                 child: TextField(
                   decoration: const InputDecoration(
-                    labelText: 'Confirmar Senha',
+                    labelText: 'CPF do responsável',
                   ),
                   controller: confirmPassController,
                 ),

@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -103,6 +102,13 @@ class CadastroFunc extends StatelessWidget {
               SizedBox(
                 width: 250,
                 child: ElevatedButton(
+                  style: (ElevatedButton.styleFrom(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 50, vertical: 20),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0),
+                        ),
+                      )),
                   child: const Text('Cadastrar'),
                   onPressed: () {
                     if (emailController.text.isNotEmpty &&
