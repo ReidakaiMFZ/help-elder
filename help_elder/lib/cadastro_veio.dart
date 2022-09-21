@@ -115,8 +115,7 @@ class CadastroVeio extends StatelessWidget {
                       
                       final data = {'cpf':cpfController, 'cpfResp':cpfRespController, 'nome':nomeController};
 
-                      db.collection("idoso").add(data).then((documentSnapshot) =>
-                          print("Added Data with ID: ${documentSnapshot.id}"));
+                      db.collection("idoso").add(data);
 
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');
