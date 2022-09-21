@@ -28,120 +28,123 @@ class Login extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         backgroundColor: const Color.fromARGB(225, 235, 249, 255),
-        body: Column(
-          children: [
-            SizedBox(
-              height: 150,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Login',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            SizedBox(
-              height: 80,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text('Faça login como cuidador/responsável de alguém',
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 150,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Login',
                       style: TextStyle(
-                        fontSize: 15,
-                      )),
-                ],
-              ),
-            ),
-            SizedBox(
-              width: 350,
-              child: TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Email',
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-                controller: emailController,
               ),
-            ),
-            SizedBox(
-              width: 350,
-              child: TextField(
-                decoration: const InputDecoration(
-                  labelText: 'Senha',
+              SizedBox(height: 10),
+              SizedBox(
+                height: 80,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text('Faça login como cuidador/responsável de alguém',
+                        style: TextStyle(
+                          fontSize: 15,
+                        )),
+                  ],
                 ),
-                controller: passController,
               ),
-            ),
-            SizedBox(
-              height: 100,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 250,
-                    child: ElevatedButton(
-                      style: (ElevatedButton.styleFrom(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 50, vertical: 20),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32.0),
-                        ),
-                      )),
-                      child: const Text('Login',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
+              SizedBox(
+                width: 350,
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Email',
+                  ),
+                  controller: emailController,
+                ),
+              ),
+              SizedBox(
+                width: 350,
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'Senha',
+                  ),
+                  controller: passController,
+                ),
+              ),
+              SizedBox(
+                height: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 250,
+                      child: ElevatedButton(
+                        style: (ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 50, vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(32.0),
+                          ),
+                        )),
+                        child: const Text('Login',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          auth
+                              .signInWithEmailAndPassword(
+                                  email: emailController.text,
+                                  password: passController.text)
+                              .then((x) => {
+                                    Navigator.pop(context),
+                                    Navigator.pushNamed(context, '/home')
+                                  })
+                              .catchError((e) => {
+                                    showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) =>
+                                            alert)
+                                  });
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 150,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextButton(
+                      child: const Text('Esqueceu a Senha?',
+                          style: TextStyle(fontSize: 15)),
                       onPressed: () {
-                        auth
-                            .signInWithEmailAndPassword(
-                                email: emailController.text,
-                                password: passController.text)
-                            .then((x) => {
-                                  Navigator.pop(context),
-                                  Navigator.pushNamed(context, '/home')
-                                })
-                            .catchError((e) => {
-                                  showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) => alert)
-                                });
+                        Navigator.pushNamed(context, '/esqueci_senha');
                       },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            SizedBox(
-              height: 150,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  Text('Não tem uma conta?'),
                   TextButton(
-                    child: const Text('Esqueceu a Senha?',
-                        style: TextStyle(fontSize: 15)),
+                    child: const Text('Cadastre-se'),
                     onPressed: () {
-                      Navigator.pushNamed(context, '/esqueci_senha');
+                      Navigator.pushNamed(context, '/cadResp');
                     },
                   ),
                 ],
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('Não tem uma conta?'),
-                TextButton(
-                  child: const Text('Cadastre-se'),
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/cadResp');
-                  },
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
