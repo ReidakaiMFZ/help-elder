@@ -3,6 +3,7 @@ import 'package:help_elder/login.dart';
 import 'package:help_elder/cadastro_resp.dart';
 import 'package:help_elder/cadastro_func.dart';
 import 'package:help_elder/home.dart';
+import 'package:help_elder/cadastro_veio.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -20,6 +21,7 @@ void main() async {
       '/login': (context) => const Login(),
       '/cadResp': (context) => const CadastroResp(),
       '/cadFunc': (context) => const CadastroFunc(),
+      '/cadVeio': (context) => const CadastroVeio(),
     },
     
 
@@ -72,6 +74,12 @@ class Test extends StatelessWidget{
                   Navigator.pushNamed(context, '/home');
                 },
                 child: const Text("Home"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/cadVeio');
+                },
+                child: const Text("Cadastro de veio"),
               ),
             ],
           ),
