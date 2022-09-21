@@ -113,9 +113,9 @@ class CadastroVeio extends StatelessWidget {
                         cpfController.text.isNotEmpty &&
                         cpfRespController.text.isNotEmpty) {
                       
-                      final data = {'cpf':cpfController, 'cpfResp':cpfRespController, 'nome':nomeController};
+                      final data = {"cpf": cpfController.text, "cpfResp": cpfRespController, 'nome' : nomeController};
 
-                      db.collection("idoso").add(data);
+                      db.collection("idoso").doc("idoso").set(data);
 
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');
