@@ -30,13 +30,17 @@ class CadastroResp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: SizedBox(
-          width: 500,
-          height: 1000,
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              const SizedBox(
+                height: 80,
+              ),
               SizedBox(
                   width: 300,
                   child: Column(children: const [
@@ -166,7 +170,7 @@ class CadastroResp extends StatelessWidget {
               ),
             ],
           ),
-        ),
+        ),),
         backgroundColor: const Color.fromARGB(225, 235, 249, 255),
       ),
     );

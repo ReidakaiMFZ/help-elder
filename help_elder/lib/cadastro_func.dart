@@ -32,7 +32,7 @@ class CadastroFunc extends StatelessWidget {
         body: SizedBox(
           width: 500,
           height: 1000,
-          child: Column(
+          child: SingleChildScrollView(child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -40,6 +40,9 @@ class CadastroFunc extends StatelessWidget {
               SizedBox(
                   width: 300,
                   child: Column(children: const [
+                    SizedBox(
+                      height: 80,
+                    ),
                     Text(
                       'Cadastro',
                       style: TextStyle(
@@ -164,7 +167,7 @@ class CadastroFunc extends StatelessWidget {
                 ),
               ),
             ],
-          ),
+          ),)
         ),
         backgroundColor: const Color.fromARGB(225, 235, 249, 255),
       ),
