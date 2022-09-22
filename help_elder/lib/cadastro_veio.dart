@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
 class CadastroVeio extends StatelessWidget {
@@ -11,9 +9,9 @@ class CadastroVeio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passController = TextEditingController();
-    final TextEditingController confirmPassController = TextEditingController();
+    final TextEditingController cpfController = TextEditingController();
+    final TextEditingController nomeController = TextEditingController();
+    final TextEditingController cpfRespController = TextEditingController();
     AlertDialog alert = AlertDialog(
       title: const Text("Erro"),
       content: const Text("Algum erro ocorreu"),
@@ -61,7 +59,7 @@ class CadastroVeio extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'Nome',
                   ),
-                  controller: emailController,
+                  controller: cpfController,
                 ),
               ),
               SizedBox(
@@ -70,7 +68,7 @@ class CadastroVeio extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'CPF',
                   ),
-                  controller: passController,
+                  controller: nomeController,
                 ),
               ),
               SizedBox(
@@ -79,7 +77,7 @@ class CadastroVeio extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'CPF do responsável',
                   ),
-                  controller: confirmPassController,
+                  controller: cpfRespController,
                 ),
               ),
               SizedBox(
@@ -111,19 +109,14 @@ class CadastroVeio extends StatelessWidget {
                       )),
                   child: const Text('Cadastrar'),
                   onPressed: () {
-                    if (emailController.text.isNotEmpty &&
-                        passController.text.isNotEmpty &&
-                        passController.text == confirmPassController.text) {
-                      auth
-                          .createUserWithEmailAndPassword(
-                        email: emailController.text,
-                        password: passController.text,
-                      )
-                          .then((UserCredential user) {
-                        db.collection("responsavel").doc(user.user!.uid).set({
-                          'email': emailController.text,
-                        });
-                      });
+                    if (cpfController.text.isNotEmpty &&
+                        cpfController.text.isNotEmpty &&
+                        cpfRespController.text.isNotEmpty) {
+                      
+                      final data = {"cpf": cpfController.text, "cpfResp": cpfRespController, 'nome' : nomeController};
+
+                      db.collection("idoso").doc("idoso").set(data);
+
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');
                     } else {
