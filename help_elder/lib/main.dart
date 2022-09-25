@@ -23,18 +23,12 @@ void main() async {
       '/cadResp': (context) => const CadastroResp(),
       '/cadFunc': (context) => const CadastroFunc(),
       '/cadVeio': (context) => const CadastroVeio(),
-      '/chat':(context) => const Chat(),
+      '/chat':(context) => Chat(),
     },
     
 
   ));
 }
-
-// void firebase() async{
-//   await Firebase.initializeApp(
-//     options: DefaultFirebaseOptions.currentPlatform,
-//   );
-// }
 
 class Test extends StatelessWidget{
   const Test({Key? key}) : super(key: key);
