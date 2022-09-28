@@ -117,7 +117,7 @@ class CadastroVeio extends StatelessWidget {
                     if (nomeController.text.isNotEmpty &&
                         cpfController.text.isNotEmpty &&
                         respController.text.isNotEmpty) {
-                      db.collection("idoso").add({'cpf':nomeController.text, 'cpfResp' : respController, 'nome': cpfController});
+                      db.collection("idoso").add({"cpf":nomeController.text, "cpfResp" : respController.text, "nome": cpfController.text});
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');
                     } else {
