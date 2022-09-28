@@ -5,15 +5,20 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Help Elder'),
           backgroundColor: Colors.black,
         ),
-        body: const SizedBox(
-            width: 500, height: 500, child: Text('Tela principal')),
+        body: Column(
+          children: const [
+            Text('Tela principal'),
+            Image(
+                image: NetworkImage(
+                    'https://flutter.github.io/assets-for-api-docs/assets/widgets/owl.jpg'))
+          ],
+        ),
         backgroundColor: const Color.fromARGB(225, 235, 249, 255),
       ),
     );
