@@ -9,6 +9,7 @@ import 'package:help_elder/estoque.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -83,7 +84,14 @@ class Test extends StatelessWidget {
             ),
             ElevatedButton(
                 onPressed: () => Navigator.pushNamed(context, '/estoque'),
-                child: const Text("Estoque"))
+                child: const Text("Estoque")
+            ),
+            ElevatedButton(
+              onPressed: (){
+                FirebaseAuth.instance.signOut();
+              },
+              child: const Text("Botão de logout"),
+            )
           ],
         ),
       ),
