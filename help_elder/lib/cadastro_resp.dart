@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -30,20 +30,19 @@ class CadastroResp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: SingleChildScrollView(
-          child: Column(
+          width: 500,
+          height: 1000,
+          child: SingleChildScrollView(child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(
-                height: 80,
-              ),
               SizedBox(
                   width: 300,
                   child: Column(children: const [
+                    SizedBox(
+                      height: 80,
+                    ),
                     Text(
                       'Cadastro',
                       style: TextStyle(
@@ -120,18 +119,16 @@ class CadastroResp extends StatelessWidget {
                         passController.text == confirmPassController.text) {
                       auth
                           .createUserWithEmailAndPassword(
-                        email: emailController.text,
-                        password: passController.text,
-                      )
-                          .then((UserCredential user) {
-                        db.collection("responsavel").doc(user.user!.uid).set({
-                          'email': emailController.text,
-                        });
-                      });
+                              email: emailController.text,
+                              password: passController.text)
+                          .then((UserCredential user) => {
+                                    db.collection("responsavel")
+                                    .doc(user.user!.uid)
+                                    .set({"email": emailController.text})
+                              });
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');
                     } else {
-                      print("Erro");
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -169,8 +166,8 @@ class CadastroResp extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),),
+          ),)
+        ),
         backgroundColor: const Color.fromARGB(225, 235, 249, 255),
       ),
     );

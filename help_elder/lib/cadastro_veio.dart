@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
 class CadastroVeio extends StatelessWidget {
@@ -9,9 +11,9 @@ class CadastroVeio extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController cpfController = TextEditingController();
     final TextEditingController nomeController = TextEditingController();
-    final TextEditingController cpfRespController = TextEditingController();
+    final TextEditingController cpfController = TextEditingController();
+    final TextEditingController respController = TextEditingController();
     AlertDialog alert = AlertDialog(
       title: const Text("Erro"),
       content: const Text("Algum erro ocorreu"),
@@ -28,8 +30,8 @@ class CadastroVeio extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
+          width: 500,
+          height: 1000,
           child: SingleChildScrollView(child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
@@ -62,7 +64,7 @@ class CadastroVeio extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'Nome',
                   ),
-                  controller: cpfController,
+                  controller: nomeController,
                 ),
               ),
               SizedBox(
@@ -71,7 +73,7 @@ class CadastroVeio extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'CPF',
                   ),
-                  controller: nomeController,
+                  controller: cpfController,
                 ),
               ),
               SizedBox(
@@ -80,7 +82,7 @@ class CadastroVeio extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'CPF do responsável',
                   ),
-                  controller: cpfRespController,
+                  controller: respController,
                 ),
               ),
               SizedBox(
@@ -112,18 +114,13 @@ class CadastroVeio extends StatelessWidget {
                       )),
                   child: const Text('Cadastrar'),
                   onPressed: () {
-                    if (cpfController.text.isNotEmpty &&
+                    if (nomeController.text.isNotEmpty &&
                         cpfController.text.isNotEmpty &&
-                        cpfRespController.text.isNotEmpty) {
-                      
-                      final data = {"cpf": cpfController.text, "cpfResp": cpfRespController, 'nome' : nomeController};
-
-                      db.collection("idoso").doc("idoso").set(data);
-
+                        respController.text.isNotEmpty) {
+                      db.collection("idoso").add({"cpf":nomeController.text, "cpfResp" : respController.text, "nome": cpfController.text});
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');
                     } else {
-                      print("Erro");
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
