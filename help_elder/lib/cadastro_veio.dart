@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cpf_cnpj_validator/cpf_validator.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -117,9 +118,12 @@ class CadastroVeio extends StatelessWidget {
                     if (nomeController.text.isNotEmpty &&
                         cpfController.text.isNotEmpty &&
                         respController.text.isNotEmpty) {
-                      db.collection("idoso").add({"cpf":nomeController.text, "cpfResp" : respController.text, "nome": cpfController.text});
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/home');
+                      if (CPFValidator.isValid(cpfController.text) &&
+                          CPFValidator.isValid(respController.text)) {
+                            db.collection("idoso").add({"cpf":nomeController.text, "cpfResp" : respController.text, "nome": cpfController.text});
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/home');
+                          }
                     } else {
                       showDialog(
                         context: context,
