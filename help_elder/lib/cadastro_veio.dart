@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cpf_cnpj_validator/cpf_validator.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -14,6 +15,7 @@ class CadastroVeio extends StatelessWidget {
     final TextEditingController nomeController = TextEditingController();
     final TextEditingController cpfController = TextEditingController();
     final TextEditingController respController = TextEditingController();
+    final TextEditingController respNomeController = TextEditingController();
     AlertDialog alert = AlertDialog(
       title: const Text("Erro"),
       content: const Text("Algum erro ocorreu"),
@@ -44,7 +46,7 @@ class CadastroVeio extends StatelessWidget {
                       height: 80,
                     ),
                     Text(
-                      'Cadastro',
+                      'Cadastro de idoso',
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -53,7 +55,7 @@ class CadastroVeio extends StatelessWidget {
                     SizedBox(
                       height: 30,
                     ),
-                    Text('Faça cadastro de um idoso'),
+                    Text('Cadastre um idoso em nossa plataforma'),
                     SizedBox(
                       height: 30,
                     ),
@@ -80,23 +82,18 @@ class CadastroVeio extends StatelessWidget {
                 width: 300,
                 child: TextField(
                   decoration: const InputDecoration(
-                    labelText: 'CPF do responsável',
+                    labelText: 'Nome do Resonsável',
                   ),
-                  controller: respController,
+                  controller: respNomeController,
                 ),
               ),
               SizedBox(
                 width: 300,
-                child: Row(
-                  children: [
-                    Checkbox(
-                      value: false,
-                      onChanged: (bool? value) {},
-                      checkColor: const Color.fromARGB(255, 81, 241, 228),
-                      activeColor: const Color.fromARGB(255, 81, 105, 241),
-                    ),
-                    const Text('Eu li e concordo com os Termos')
-                  ],
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'CPF do responsável',
+                  ),
+                  controller: respController,
                 ),
               ),
               const SizedBox(
@@ -116,10 +113,14 @@ class CadastroVeio extends StatelessWidget {
                   onPressed: () {
                     if (nomeController.text.isNotEmpty &&
                         cpfController.text.isNotEmpty &&
-                        respController.text.isNotEmpty) {
-                      db.collection("idoso").add({"cpf":nomeController.text, "cpfResp" : respController.text, "nome": cpfController.text});
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, '/home');
+                        respController.text.isNotEmpty &&
+                        respNomeController.text.isNotEmpty) {
+                      if (CPFValidator.isValid(cpfController.text) &&
+                          CPFValidator.isValid(respController.text)) {
+                            db.collection("idoso").add({"nome": cpfController.text, "cpf":nomeController.text, "nomeResp":respNomeController, "cpfResp" : respController.text,});
+                            Navigator.pop(context);
+                            Navigator.pushNamed(context, '/home');
+                          }
                     } else {
                       showDialog(
                         context: context,
@@ -133,29 +134,6 @@ class CadastroVeio extends StatelessWidget {
               ),
               const SizedBox(
                 height: 50,
-              ),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    const TextSpan(
-                      text: 'Já tem cadastro? ',
-                      style: TextStyle(
-                        color: Colors.black,
-                      ),
-                    ),
-                    TextSpan(
-                      text: "Faça login",
-                      style: const TextStyle(
-                        color: Colors.blue,
-                      ),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pop(context);
-                          Navigator.pushNamed(context, '/login');
-                        },
-                    ),
-                  ],
-                ),
               ),
             ],
           ),)
