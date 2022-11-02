@@ -5,27 +5,29 @@ import 'package:flutter_chat_bubble/bubble_type.dart';
 import 'package:flutter_chat_bubble/clippers/chat_bubble_clipper_1.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:firebase_database/firebase_database.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 User? user = auth.currentUser;
+String receiver = "MTV48ahFfTeUq7rr0FFWJXvz2HA3";
 FirebaseFirestore firestore = FirebaseFirestore.instance;
+FirebaseDatabase database = FirebaseDatabase.instance;
 
 class Chat extends StatefulWidget {
   Chat({Key? key}) : super(key: key);
   final List<Widget> messages = <Widget>[];
 
   @override
-  ChatState createState() { 
-
+  ChatState createState() {
     return ChatState();
   }
 }
 
-class ChatState extends State<Chat>{
+class ChatState extends State<Chat> {
   final TextEditingController messageController = TextEditingController();
   void createMessage(String message, bool isMe) {
-    if (isMe){
+    print(message + " " + isMe.toString());
+    if (isMe) {
       widget.messages.add(ChatBubble(
         clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
         alignment: Alignment.topRight,
@@ -33,8 +35,7 @@ class ChatState extends State<Chat>{
         backGroundColor: const Color(0xff007EF4),
         child: Text(message),
       ));
-    }
-    else{
+    } else {
       widget.messages.add(ChatBubble(
         clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
         alignment: Alignment.topLeft,
@@ -44,53 +45,91 @@ class ChatState extends State<Chat>{
       ));
     }
   }
+
   void storeMessage(String message) {
     if (messageController.text.isNotEmpty) {
-      final colecao = firestore.collection('messages');
-      colecao.add(
-        {
-          'message': message,
-          'sender': user!.uid,
-          'receiver': '',
-          'time': DateTime.now().millisecondsSinceEpoch,
-        }
-      );
+      // final colecao = firestore.collection('messages');
+      // colecao.add(
+      //   {
+      //     'message': message,
+      //     'sender': user!.uid,
+      //     'receiver': '',
+      //     'time': DateTime.now().millisecondsSinceEpoch,
+      //   }
+      // );
+      // createMessage(message, true);
+      final ref = database.ref('chats').push();
+      ref.set({
+        'message': message,
+        'sender': user?.uid ?? '',
+        'receiver': '',
+        'time': DateTime.now().millisecondsSinceEpoch,
+      }).then((value) {
+        print('Mandou');
+      });
+
       createMessage(message, true);
     }
   }
-  void getMessages() {
-    final myMessages = firestore.collection('messages').where("sender", isEqualTo: user!.uid).orderBy('time');
-    myMessages.get().then(
-      (QuerySnapshot querySnapshot){
-        querySnapshot.docs.forEach(
-          (doc){
-            setState(() {
-              createMessage(doc['message'], true);
-            });
-          }
-        );
-      } 
-    );
+
+  void getMessages() async {
+    // final myMessages = firestore
+    //     .collection('messages')
+    //     .where("sender", isEqualTo: user!.uid)
+    //     .orderBy('time');
+    var serverMessages = [];
+
+    var myMessages =
+        database.ref('chats').orderByChild('sender').equalTo(user?.uid ?? '');
+
+    await myMessages.once().then((querySnapshot) async {
+      for (var doc in querySnapshot.snapshot.children) {
+        var message = await doc.ref.get();
+        print(message.value as dynamic);
+        serverMessages.add(message.value as dynamic);
+      }
+      print(serverMessages);
+    });
+
+    myMessages =
+        database.ref('chats').orderByChild('receiver').equalTo(user?.uid ?? '');
+
+    await myMessages.once().then((querySnapshot) async {
+      for (var doc in querySnapshot.snapshot.children) {
+        var message = await doc.ref.get();
+        print(message.value as dynamic);
+        serverMessages.add(message.value as dynamic);
+      }
+      print(serverMessages);
+    });
+    serverMessages.sort((a, b) => a['time'].compareTo(b['time']));
+    setState(() {
+      for (var message in serverMessages) {
+        createMessage((message)['message'], user?.uid == (message)['sender']);
+        print(message.toString());
+      }
+    });
   }
 
   @override
   void initState() {
     super.initState();
+    print("object");
     getMessages();
   }
 
   @override
-  Widget build (BuildContext context){
-    final docRef = firestore.collection("messages");
-    
-    docRef.snapshots().listen(
-      (event) { 
-        var element = event.docs.last;
-        if (element.data()['sender'] != user!.uid){
-          createMessage(element.data()['message'], false);
-        }
-      },
-    );
+  Widget build(BuildContext context) {
+    // final docRef = firestore.collection("messages");
+
+    // docRef.snapshots().listen(
+    //   (event) {
+    //     var element = event.docs.last;
+    //     if (element.data()['sender'] != user!.uid) {
+    //       createMessage(element.data()['message'], false);
+    //     }
+    //   },
+    // );
 
     return Scaffold(
       body: Stack(
@@ -121,14 +160,12 @@ class ChatState extends State<Chat>{
                 ),
                 IconButton(
                   onPressed: () {
-                    setState(
-                      () {
-                        if(messageController.text.isNotEmpty){
-                          storeMessage(messageController.text);
-                          messageController.clear();
-                        }
+                    setState(() {
+                      if (messageController.text.isNotEmpty) {
+                        storeMessage(messageController.text);
+                        messageController.clear();
                       }
-                    );
+                    });
                   },
                   icon: const Icon(Icons.send),
                 ),
