@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 import 'package:help_elder/login.dart';
 import 'package:help_elder/cadastro_resp.dart';
 import 'package:help_elder/cadastro_func.dart';
@@ -7,15 +10,12 @@ import 'package:help_elder/cadastro_veio.dart';
 import 'package:help_elder/chat.dart';
 import 'package:help_elder/estoque.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(MaterialApp(
     home: const Test(),
     routes: <String, WidgetBuilder>{
@@ -25,7 +25,7 @@ void main() async {
       '/cadFunc': (context) => const CadastroFunc(),
       '/cadVeio': (context) => const CadastroVeio(),
       '/chat': (context) => Chat(),
-      '/estoque': (context) => const Stock(),
+      '/estoque': (context) => const Inventory(),
     },
   ));
 }
@@ -36,65 +36,60 @@ class Test extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        home: Scaffold(
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text('Tela de debug'),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/login');
-              },
-              child: const Text("Login"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/cadResp');
-              },
-              child: const Text("Cadastro de Responsável"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/cadFunc');
-              },
-              child: const Text("Cadastro de Funcionário"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/home');
-              },
-              child: const Text("Home"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/cadVeio');
-              },
-              child: const Text("Cadastro de veio"),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/chat');
-              },
-              child: const Text("chat"),
-            ),
-            ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, '/estoque'),
-                child: const Text("Estoque")
-            ),
-            ElevatedButton(
-              onPressed: (){
-                FirebaseAuth.instance.signOut();
-              },
-              child: const Text("Botão de logout"),
-            )
-          ],
+      home: Scaffold(
+        body: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text('Tela de debug'),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+                child: const Text("Login"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/cadResp');
+                },
+                child: const Text("Cadastro de Responsável"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/cadFunc');
+                },
+                child: const Text("Cadastro de Funcionário"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/home');
+                },
+                child: const Text("Home"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/cadVeio');
+                },
+                child: const Text("Cadastro de veio"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/chat');
+                },
+                child: const Text("chat"),
+              ),
+              ElevatedButton(
+                  onPressed: () => Navigator.pushNamed(context, '/estoque'),
+                  child: const Text("Estoque"))
+            ],
+          ),
         ),
-      ),
-    ));
+      )
+    );
   }
 }
+

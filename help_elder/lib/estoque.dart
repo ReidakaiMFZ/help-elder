@@ -38,14 +38,14 @@ void publishMedicine(String id, List<Medicine> medicines) {
 
 void addMedicine() {}
 
-class Stock extends StatefulWidget {
-  const Stock({super.key});
+class Inventory extends StatefulWidget {
+  const Inventory({super.key});
 
   @override
-  State<Stock> createState() => _StockState();
+  State<Inventory> createState() => _InventoryState();
 }
 
-class _StockState extends State<Stock> {
+class _InventoryState extends State<Inventory> {
   List<Medicine>? medicines;
   @override
   void initState() {
