@@ -43,6 +43,7 @@ dependencies:
   timezone: ^0.8.0
   flutter_native_timezone: ^2.0.0
   firebase_database: ^9.1.7
+  firebase_messaging: ^13.1.0
 
 
 

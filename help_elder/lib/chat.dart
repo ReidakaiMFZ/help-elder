@@ -1,4 +1,5 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, no_logic_in_create_state
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_bubble/chat_bubble.dart';
 import 'package:flutter_chat_bubble/bubble_type.dart';
@@ -7,11 +8,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+
 FirebaseAuth auth = FirebaseAuth.instance;
 User? user = auth.currentUser;
 String receiver = "MTV48ahFfTeUq7rr0FFWJXvz2HA3";
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 FirebaseDatabase database = FirebaseDatabase.instance;
+FirebaseMessaging messaging = FirebaseMessaging.instance;
 
 class Chat extends StatefulWidget {
   Chat({Key? key}) : super(key: key);
@@ -26,7 +29,7 @@ class Chat extends StatefulWidget {
 class ChatState extends State<Chat> {
   final TextEditingController messageController = TextEditingController();
   void createMessage(String message, bool isMe) {
-    print(message + " " + isMe.toString());
+    print("$message $isMe");
     if (isMe) {
       widget.messages.add(ChatBubble(
         clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
