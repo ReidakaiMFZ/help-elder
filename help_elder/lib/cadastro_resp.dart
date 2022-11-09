@@ -6,8 +6,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
+const List<String> telas = <String> ['Cadastro de Idoso', 'Cadastro de responsável', 'Cadastro de funcionário'];
+
 class CadastroResp extends StatelessWidget {
   const CadastroResp({Key? key}) : super(key: key);
+  
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +102,23 @@ class CadastroResp extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 50,
+              SizedBox(
+                width: 300,
+                child: DropdownButton(
+                  value: 'Cadastro de responsável',
+                  items: telas.map((String value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(), onChanged: (String? value) { 
+                    if (value == 'Cadastro de idoso') {
+                      Navigator.pushNamed(context, '/cadVeio');
+                    } else if (value == 'Cadastro de funcionário') {
+                      Navigator.pushNamed(context, '/cadFunc');
+                    }
+                   },
+                )
               ),
               SizedBox(
                 width: 250,

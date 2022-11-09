@@ -2,9 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:help_elder/cadastro_resp.dart';
+import 'package:help_elder/cadastro_veio.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
+
+const List<String> telas = <String> ['Cadastro de Idoso', 'Cadastro de responsável', 'Cadastro de funcionário'];
 
 class CadastroFunc extends StatelessWidget {
   const CadastroFunc({Key? key}) : super(key: key);
@@ -28,6 +32,13 @@ class CadastroFunc extends StatelessWidget {
     );
 
     return MaterialApp(
+
+      routes: <String, WidgetBuilder>{
+      '/cadResp': (context) => const CadastroResp(),
+      '/cadFunc': (context) => const CadastroFunc(),
+      '/cadVeio': (context) => const CadastroVeio(),
+    },
+
       home: Scaffold(
         body: SizedBox(
           width: 500,
@@ -99,8 +110,23 @@ class CadastroFunc extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 50,
+              SizedBox(
+                width: 300,
+                child: DropdownButton(
+                  value: 'Cadastro de funcionário',
+                  items: telas.map((String value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(), onChanged: (String? value) { 
+                    if (value == 'Cadastro de idoso') {
+                      Navigator.pushNamed(context, '/cadVeio');
+                    } else if (value == 'Cadastro de responsável') {
+                      Navigator.pushNamed(context, '/cadResp');
+                    }
+                   },
+                )
               ),
               SizedBox(
                 width: 250,

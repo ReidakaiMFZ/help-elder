@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cpf_cnpj_validator/cpf_validator.dart';
 
+import 'package:help_elder/cadastro_resp.dart';
+import 'package:help_elder/cadastro_func.dart';
+
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -15,6 +18,9 @@ class CadastroVeio extends StatelessWidget {
     final TextEditingController cpfController = TextEditingController();
     final TextEditingController respController = TextEditingController();
     final TextEditingController respNomeController = TextEditingController();
+
+  const List<String> telas = <String> ['Cadastro de Idoso', 'Cadastro de responsável', 'Cadastro de funcionário'];
+
     AlertDialog alert = AlertDialog(
       title: const Text("Erro"),
       content: const Text("Algum erro ocorreu"),
@@ -29,6 +35,12 @@ class CadastroVeio extends StatelessWidget {
     );
 
     return MaterialApp(
+      routes: <String, WidgetBuilder>{
+      '/cadResp': (context) => const CadastroResp(),
+      '/cadFunc': (context) => const CadastroFunc(),
+      '/cadVeio': (context) => const CadastroVeio(),
+    },
+
       home: Scaffold(
         body: SizedBox(
           width: 500,
@@ -97,6 +109,24 @@ class CadastroVeio extends StatelessWidget {
               ),
               const SizedBox(
                 height: 50,
+              ),
+              SizedBox(
+                width: 300,
+                child: DropdownButton(
+                  value: 'Cadastro de Idoso',
+                  items: telas.map((String value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(), onChanged: (String? value) { 
+                    if (value == 'Cadastro de responsável') {
+                      Navigator.pushNamed(context, '/cadResp');
+                    } else if (value == 'Cadastro de funcionário') {
+                      Navigator.pushNamed(context, '/cadFunc');
+                    }
+                   },
+                )
               ),
               SizedBox(
                 width: 250,
