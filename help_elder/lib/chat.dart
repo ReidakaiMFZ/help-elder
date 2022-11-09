@@ -65,7 +65,7 @@ class ChatState extends State<Chat> {
       ref.set({
         'message': message,
         'sender': user?.uid ?? '',
-        'receiver': '',
+        'receiver': receiver,
         'time': DateTime.now().millisecondsSinceEpoch,
       }).then((value) {
         print('Mandou');
