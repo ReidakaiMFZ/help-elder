@@ -130,7 +130,7 @@ class _InventoryState extends State<Inventory> {
                                             int.parse(consumeController.text);
                                       });
                                       publishMedicine(
-                                          'aGbRsMpZJVOFApgdyVPi', medicines!);
+                                          elderId, medicines!);
                                       Navigator.pop(context);
                                     },
                                     child: const Text('Salvar'),
