@@ -59,9 +59,6 @@ class _InventoryState extends State<Inventory> {
   Widget build(BuildContext context) {
     if (medicines != null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Estoque'),
-        ),
         body: SingleChildScrollView(
           child: Column(children: [
             SizedBox(

@@ -6,7 +6,7 @@
     </intent-filter> -->
    <application
         android:label="help_elder"
-        android:name=".Application"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

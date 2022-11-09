@@ -1,3 +1,4 @@
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -19,7 +20,7 @@ void main() async {
   runApp(MaterialApp(
     home: const Test(),
     routes: <String, WidgetBuilder>{
-      '/home': (context) => const Home(),
+      '/home': (context) =>  const Home(),
       '/login': (context) => const Login(),
       '/cadResp': (context) => const CadastroResp(),
       '/cadFunc': (context) => const CadastroFunc(),
@@ -84,7 +85,7 @@ class Test extends StatelessWidget {
               ),
               ElevatedButton(
                   onPressed: () => Navigator.pushNamed(context, '/estoque'),
-                  child: const Text("Estoque"))
+                  child: const Text("Estoque")),
             ],
           ),
         ),
