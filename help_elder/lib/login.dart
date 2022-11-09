@@ -101,8 +101,8 @@ class Login extends StatelessWidget {
                                   email: emailController.text,
                                   password: passController.text)
                               .then((x) => {
-                                    Navigator.pop(context),
-                                    Navigator.pushNamed(context, '/home')
+                                    Navigator.of(context).pop(),
+                                    Navigator.pushNamed(context, '/home'),
                                   })
                               .catchError((e) => {
                                     showDialog(
@@ -125,6 +125,7 @@ class Login extends StatelessWidget {
                       child: const Text('Esqueceu a Senha?',
                           style: TextStyle(fontSize: 15)),
                       onPressed: () {
+                        Navigator.pop(context);
                         Navigator.pushNamed(context, '/esqueci_senha');
                       },
                     ),

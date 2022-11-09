@@ -88,14 +88,15 @@ class _HomeState extends State<Home>{
           title: const Text("Help Elder"),
         ),
         bottomNavigationBar: NavigationBar(
+            backgroundColor: Colors.blue,
             destinations: const [
               NavigationDestination(
-                icon: Icon(Icons.home),
-                label: "Conversas",
+                icon: Icon(Icons.comment),
+                label: "Chat",
               ),
               NavigationDestination(
-                icon: Icon(Icons.home),
-                label: "Remedios",
+                icon: Icon(Icons.medical_information),
+                label: "Remédios",
               ),
             ],
             onDestinationSelected: (int index) {
