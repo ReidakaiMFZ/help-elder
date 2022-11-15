@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:help_elder/login.dart';
 import 'package:help_elder/cadastro_resp.dart';
@@ -13,12 +14,22 @@ import 'package:help_elder/chat.dart';
 import 'package:help_elder/estoque.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
+FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("Handling a background message: ${message.messageId}"); 
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
   runApp(MaterialApp(
     home: const Test(),
     routes: <String, WidgetBuilder>{
