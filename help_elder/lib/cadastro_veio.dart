@@ -19,8 +19,6 @@ class CadastroVeio extends StatelessWidget {
     final TextEditingController respController = TextEditingController();
     final TextEditingController respNomeController = TextEditingController();
 
-  const List<String> telas = <String> ['Cadastro de Idoso', 'Cadastro de responsável', 'Cadastro de funcionário'];
-
     AlertDialog alert = AlertDialog(
       title: const Text("Erro"),
       content: const Text("Algum erro ocorreu"),
@@ -109,24 +107,6 @@ class CadastroVeio extends StatelessWidget {
               ),
               const SizedBox(
                 height: 50,
-              ),
-              SizedBox(
-                width: 300,
-                child: DropdownButton(
-                  value: 'Cadastro de Idoso',
-                  items: telas.map((String value) {
-                    return DropdownMenuItem(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(), onChanged: (String? value) { 
-                    if (value == 'Cadastro de responsável') {
-                      Navigator.pushNamed(context, '/cadResp');
-                    } else if (value == 'Cadastro de funcionário') {
-                      Navigator.pushNamed(context, '/cadFunc');
-                    }
-                   },
-                )
               ),
               SizedBox(
                 width: 250,

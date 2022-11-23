@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
-const List<String> telas = <String> ['Cadastro de Idoso', 'Cadastro de responsável', 'Cadastro de funcionário'];
+const List<String> telas = <String> ['Cadastro de responsável', 'Cadastro de funcionário'];
 
 class CadastroResp extends StatelessWidget {
   const CadastroResp({Key? key}) : super(key: key);
@@ -111,10 +111,8 @@ class CadastroResp extends StatelessWidget {
                       value: value,
                       child: Text(value),
                     );
-                  }).toList(), onChanged: (String? value) { 
-                    if (value == 'Cadastro de idoso') {
-                      Navigator.pushNamed(context, '/cadVeio');
-                    } else if (value == 'Cadastro de funcionário') {
+                  }).toList(), onChanged: (String? value){
+                  if (value == 'Cadastro de funcionário') {
                       Navigator.pushNamed(context, '/cadFunc');
                     }
                    },
