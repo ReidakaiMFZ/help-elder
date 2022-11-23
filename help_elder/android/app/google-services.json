@@ -30,6 +30,13 @@
             {
               "client_id": "621674846439-enquisfs36kckve6a8ompnf3ji9s6p0s.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "621674846439-eu68f4l3uk2vmutc8a9ckiu1toc5ap6h.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.helpElder"
+              }
             }
           ]
         }

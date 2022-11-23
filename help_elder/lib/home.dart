@@ -2,9 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:help_elder/estoque.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
+FirebaseFirestore db = FirebaseFirestore.instance;
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -18,70 +21,62 @@ class _HomeState extends State<Home>{
     super.initState();
   }
 
-  Widget conversations(){
-    return Flex(
-      direction: Axis.vertical,
-      verticalDirection: VerticalDirection.down,
-      children: [
-        Flexible(
-          child: Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Color(0xFFD9D9D9),
-                  width: 2.0,
-                )
-              )
-            ),
-            child: Row(
-              children: [
-                Padding (
-                  padding: const EdgeInsets.only(
-                    top: 10.0,
-                    left: 10.0,
-                    right: 10.0,
-                  ),
-                  child: Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: Image.network('https://upload.wikimedia.org/wikipedia/en/c/cc/Somewhere_Far_Beyond.jpg').image,
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 10,
-                    top: 10,
-                    right: 10,
-                  ),
-                  child: InkWell(
-                    child: const Text('User name'),
-                    onTap: (){
-                      Navigator.pushNamed(context, '/chat');
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
+  Widget topic(String name, {String photo='https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg'}){
+    return Flexible(
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: Color(0xFFD9D9D9),
+              width: 2.0,
+            )
+          )
         ),
-      ],
-    );
-  }
-
-  Widget medicines(){
-    return const Inventory();
+        child: Row(
+          children: [
+            Padding (
+              padding: const EdgeInsets.only(
+                top: 10.0,
+                left: 10.0,
+                right: 10.0,
+              ),
+              child: Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: Image.network(photo).image,
+                    fit: BoxFit.fill,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(
+                left: 10,
+                top: 10,
+                right: 10,
+              ),
+              child: InkWell(
+                child: Text(name),
+                onTap: (){
+                  Navigator.pushNamed(context, '/chat');
+                },
+              ),
+            ),
+          ],
+        )
+      ),
+    );   
   }
 
   int page = 0;
 
   @override
   Widget build(BuildContext context) {
+    final data =[];
+    
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
@@ -106,7 +101,15 @@ class _HomeState extends State<Home>{
             },
           ),
         body: Center(
-          child: page == 0 ? conversations() : medicines(),
+          child: page == 0 ? 
+            Flex(
+              direction: Axis.vertical,
+              verticalDirection: VerticalDirection.down,
+              children: [
+                for (var i = 0; i < data.length; i++)
+                  topic("name"),
+              ],
+          ) : const Inventory(),
         ),
       ),
     );
