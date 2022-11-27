@@ -3,11 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:help_elder/estoque.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore db = FirebaseFirestore.instance;
-
+FirebaseMessaging messaging = FirebaseMessaging.instance;
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -76,7 +77,8 @@ class _HomeState extends State<Home>{
   @override
   Widget build(BuildContext context) {
     final data =[];
-    
+    print(auth.currentUser);
+    messaging.getToken().then(print);
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(

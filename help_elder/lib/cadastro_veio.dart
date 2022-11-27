@@ -93,7 +93,7 @@ class CadastroVeio extends StatelessWidget {
                 width: 300,
                 child: TextField(
                   decoration: const InputDecoration(
-                    labelText: 'Nome do Resonsável',
+                    labelText: 'Nome do Responsável',
                   ),
                   controller: respNomeController,
                 ),
@@ -146,7 +146,13 @@ class CadastroVeio extends StatelessWidget {
                         respNomeController.text.isNotEmpty) {
                       if (CPFValidator.isValid(cpfController.text) &&
                           CPFValidator.isValid(respController.text)) {
-                            db.collection("idoso").add({"nome": cpfController.text, "cpf":nomeController.text, "nomeResp":respNomeController, "cpfResp" : respController.text,});
+                            db.collection("idoso").add({
+                              "nome": cpfController.text, 
+                              "cpf":nomeController.text, 
+                              "nomeResp":respNomeController, 
+                              "cpfResp" : respController.text,
+                              "idFunc": auth.currentUser!.uid
+                            });
                             Navigator.pop(context);
                             Navigator.pushNamed(context, '/home');
                           }

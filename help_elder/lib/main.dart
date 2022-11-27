@@ -1,6 +1,7 @@
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,9 +17,10 @@ import 'package:help_elder/estoque.dart';
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
 
+
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}"); 
+  print("Received a background message: ${message.messageId}"); 
 }
 
 void main() async {
@@ -29,6 +31,8 @@ void main() async {
   );
   
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  
 
   runApp(MaterialApp(
     home: const Test(),
@@ -97,8 +101,16 @@ class Test extends StatelessWidget {
                 child: const Text("chat"),
               ),
               ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/estoque'),
-                  child: const Text("Estoque")),
+                onPressed: () => Navigator.pushNamed(context, '/estoque'),
+                child: const Text("Estoque")
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  auth.signOut();
+                  print("saiu");
+                }, 
+                child: const Text("Sair")
+              ),
             ],
           ),
         ),

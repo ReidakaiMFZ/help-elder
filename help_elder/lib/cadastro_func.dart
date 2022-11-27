@@ -30,13 +30,16 @@ class CadastroFunc extends StatelessWidget {
         )
       ],
     );
+    late final String token;
+    messaging.getToken().then((String? value) {
+      token = value!;
+    });
 
     return MaterialApp(
 
       routes: <String, WidgetBuilder>{
       '/cadResp': (context) => const CadastroResp(),
       '/cadFunc': (context) => const CadastroFunc(),
-      '/cadVeio': (context) => const CadastroVeio(),
     },
 
       home: Scaffold(
@@ -120,9 +123,7 @@ class CadastroFunc extends StatelessWidget {
                       child: Text(value),
                     );
                   }).toList(), onChanged: (String? value) { 
-                    if (value == 'Cadastro de idoso') {
-                      Navigator.pushNamed(context, '/cadVeio');
-                    } else if (value == 'Cadastro de responsável') {
+                    if (value == 'Cadastro de responsável') {
                       Navigator.pushNamed(context, '/cadResp');
                     }
                    },
@@ -151,7 +152,10 @@ class CadastroFunc extends StatelessWidget {
                                 db
                                     .collection("funcionario")
                                     .doc(user.user!.uid)
-                                    .set({"email": emailController.text})
+                                    .set({
+                                      "email": emailController.text,
+                                      "FCMToken": token,
+                                    })
                               });
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');

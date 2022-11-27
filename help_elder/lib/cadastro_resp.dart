@@ -2,9 +2,11 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
+final FirebaseMessaging messaging = FirebaseMessaging.instance;
 
 const List<String> telas = <String> ['Cadastro de Idoso', 'Cadastro de responsável', 'Cadastro de funcionário'];
 
@@ -17,6 +19,7 @@ class CadastroResp extends StatelessWidget {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passController = TextEditingController();
     final TextEditingController confirmPassController = TextEditingController();
+    final TextEditingController cpfController = TextEditingController();
     AlertDialog alert = AlertDialog(
       title: const Text("Erro"),
       content: const Text("Algum erro ocorreu"),
@@ -29,7 +32,10 @@ class CadastroResp extends StatelessWidget {
         )
       ],
     );
-
+    late final String token;
+    messaging.getToken().then((String? value) {
+      token = value!;
+    });
     return MaterialApp(
       home: Scaffold(
         body: SizedBox(
@@ -74,6 +80,15 @@ class CadastroResp extends StatelessWidget {
                 width: 300,
                 child: TextField(
                   decoration: const InputDecoration(
+                    labelText: 'cpf',
+                  ),
+                  controller: cpfController,
+                ),
+              ),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  decoration: const InputDecoration(
                     labelText: 'Senha',
                   ),
                   controller: passController,
@@ -112,9 +127,7 @@ class CadastroResp extends StatelessWidget {
                       child: Text(value),
                     );
                   }).toList(), onChanged: (String? value) { 
-                    if (value == 'Cadastro de idoso') {
-                      Navigator.pushNamed(context, '/cadVeio');
-                    } else if (value == 'Cadastro de funcionário') {
+                    if (value == 'Cadastro de funcionário') {
                       Navigator.pushNamed(context, '/cadFunc');
                     }
                    },
@@ -135,15 +148,18 @@ class CadastroResp extends StatelessWidget {
                     if (emailController.text.isNotEmpty &&
                         passController.text.isNotEmpty &&
                         passController.text == confirmPassController.text) {
-                      auth
-                          .createUserWithEmailAndPassword(
-                              email: emailController.text,
-                              password: passController.text)
-                          .then((UserCredential user) => {
-                                    db.collection("responsavel")
-                                    .doc(user.user!.uid)
-                                    .set({"email": emailController.text})
-                              });
+                      auth.createUserWithEmailAndPassword(
+                        email: emailController.text,
+                        password: passController.text)
+                        .then((UserCredential user) => {
+                          db.collection("responsavel")
+                          .doc(user.user!.uid)
+                          .set({
+                            "email": emailController.text,
+                            "FCMToken": token,
+                            "cpf": cpfController.text,
+                          })
+                        });
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/home');
                     } else {
