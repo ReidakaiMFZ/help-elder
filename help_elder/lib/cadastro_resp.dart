@@ -8,7 +8,7 @@ final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 final FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-const List<String> telas = <String> ['Cadastro de Idoso', 'Cadastro de responsável', 'Cadastro de funcionário'];
+const List<String> telas = <String> ['Cadastro de responsável', 'Cadastro de funcionário'];
 
 class CadastroResp extends StatelessWidget {
   const CadastroResp({Key? key}) : super(key: key);

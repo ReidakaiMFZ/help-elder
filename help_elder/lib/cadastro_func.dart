@@ -8,7 +8,7 @@ import 'package:help_elder/cadastro_veio.dart';
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
 
-const List<String> telas = <String> ['Cadastro de Idoso', 'Cadastro de responsável', 'Cadastro de funcionário'];
+const List<String> telas = <String> ['Cadastro de responsável', 'Cadastro de funcionário'];
 
 class CadastroFunc extends StatelessWidget {
   const CadastroFunc({Key? key}) : super(key: key);
