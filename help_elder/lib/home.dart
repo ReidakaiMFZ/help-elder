@@ -23,7 +23,7 @@ class _HomeState extends State<Home>{
     super.initState();
   }
   int page = 0;
-  Widget topic(String name, {String photo='https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg'}){
+  Widget topic(String name, String uid, {String photo='https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg'}){
     return Flexible(
       child: Container(
         decoration: const BoxDecoration(
@@ -64,7 +64,7 @@ class _HomeState extends State<Home>{
                 child: Text(name),
                 onTap: (){
                   Navigator.pushNamed(context, '/chat', arguments: {
-                    "receiver": "maconha"
+                    "receiver": uid
                   });
                 },
               ),
@@ -76,12 +76,12 @@ class _HomeState extends State<Home>{
   }
   
   Future<void> getContacts(int typeAccount) async {
-    // List<Widget> list = [];
     if (typeAccount == 0){
       await db.collection('idoso').where("idFunc", isEqualTo: auth.currentUser!.uid).get().then((value) =>{
         value.docs.forEach((older) {
-          db.doc('responsavel/${older.data()['idResp']}').get().then((value) => {
-            data.add(topic(value.data()!['name'])),
+          db.doc('responsavel/${older.data()['idResp']}').get()
+          .then((value) => {
+            data.add(topic(value.data()!['email'], older.data()['idResp'])), 
           });
         })
       });
@@ -91,12 +91,12 @@ class _HomeState extends State<Home>{
         value.docs.forEach((older) {
           db.doc('funcionario/${older.data()['idFunc']}').get()
           .then((value) => {
-            data.add(topic(value.data()!['email'])),
+            data.add(topic(value.data()!['email'], older.data()['idFunc'])),
+            print(value.data())
           });
         })
       });
     }
-    // return list;
   }
 
   @override

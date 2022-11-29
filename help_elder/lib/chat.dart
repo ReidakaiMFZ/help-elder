@@ -75,10 +75,6 @@ class ChatState extends State<Chat> {
   }
 
   void getMessages() async {
-    // final myMessages = firestore
-    //     .collection('messages')
-    //     .where("sender", isEqualTo: user!.uid)
-    //     .orderBy('time');
     var serverMessages = [];
 
     var myMessages =
@@ -113,23 +109,13 @@ class ChatState extends State<Chat> {
   @override
   void initState() {
     super.initState();
-    print("object");
     getMessages();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final docRef = firestore.collection("messages");
 
-    // docRef.snapshots().listen(
-    //   (event) {
-    //     var element = event.docs.last;
-    //     if (element.data()['sender'] != user!.uid) {
-    //       createMessage(element.data()['message'], false);
-    //     }
-    //   },
-    // );
-    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
+    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map?;
     return Scaffold(
       body: Stack(
         children: [
@@ -161,7 +147,7 @@ class ChatState extends State<Chat> {
                   onPressed: () {
                     setState(() {
                       if (messageController.text.isNotEmpty) {
-                        storeMessage(messageController.text, arguments['receiver']);
+                        storeMessage(messageController.text, arguments!['receiver']);
                         messageController.clear();
                       }
                     });
