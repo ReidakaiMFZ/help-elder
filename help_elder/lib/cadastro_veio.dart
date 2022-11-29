@@ -12,12 +12,17 @@ final FirebaseFirestore db = FirebaseFirestore.instance;
 class CadastroVeio extends StatelessWidget {
   const CadastroVeio({Key? key}) : super(key: key);
 
+  Future<String> getIdFromResponsavel(String cpf) async {
+    final responsavel = await db.collection('responsavel').where('cpf', isEqualTo: cpf).get();
+    return responsavel.docs[0].id;
+  }
   @override
   Widget build(BuildContext context) {
     final TextEditingController nomeController = TextEditingController();
     final TextEditingController cpfController = TextEditingController();
     final TextEditingController respController = TextEditingController();
     final TextEditingController respNomeController = TextEditingController();
+    final TextEditingController funcController = TextEditingController();
 
     AlertDialog alert = AlertDialog(
       title: const Text("Erro"),
@@ -36,7 +41,6 @@ class CadastroVeio extends StatelessWidget {
       routes: <String, WidgetBuilder>{
       '/cadResp': (context) => const CadastroResp(),
       '/cadFunc': (context) => const CadastroFunc(),
-      '/cadVeio': (context) => const CadastroVeio(),
     },
 
       home: Scaffold(
@@ -105,6 +109,15 @@ class CadastroVeio extends StatelessWidget {
                   controller: respController,
                 ),
               ),
+              SizedBox(
+                width: 300,
+                child: TextField(
+                  decoration: const InputDecoration(
+                    labelText: 'CPF do funcionário',
+                  ),
+                  controller: funcController,
+                ),
+              ),
               const SizedBox(
                 height: 50,
               ),
@@ -119,24 +132,27 @@ class CadastroVeio extends StatelessWidget {
                         ),
                       )),
                   child: const Text('Cadastrar'),
-                  onPressed: () {
-                    if (nomeController.text.isNotEmpty &&
-                        cpfController.text.isNotEmpty &&
-                        respController.text.isNotEmpty &&
-                        respNomeController.text.isNotEmpty) {
-                      if (CPFValidator.isValid(cpfController.text) &&
-                          CPFValidator.isValid(respController.text)) {
-                            db.collection("idoso").add({
-                              "nome": cpfController.text, 
-                              "cpf":nomeController.text, 
-                              "nomeResp":respNomeController, 
-                              "cpfResp" : respController.text,
-                              "idFunc": auth.currentUser!.uid
-                            });
-                            Navigator.pop(context);
-                            Navigator.pushNamed(context, '/home');
-                          }
-                    } else {
+                  onPressed: () async {
+                    if (nomeController.text.isNotEmpty && cpfController.text.isNotEmpty && respController.text.isNotEmpty && respNomeController.text.isNotEmpty) {
+                      // if (CPFValidator.isValid(cpfController.text) && CPFValidator.isValid(respController.text)) {
+                        var idResp = await getIdFromResponsavel(respController.text);
+                        db.collection("idoso").add({
+                          "nome": nomeController.text,
+                          "cpf": cpfController.text,
+                          "nomeResp": respNomeController.text,
+                          "cpfResp" : respController.text,
+                          "idResp" : idResp,
+                          "cpfFunc": funcController.text,
+                          "idFunc": auth.currentUser!.uid
+                        }).whenComplete(() => {
+                          Navigator.pop(context),
+                          Navigator.pushNamed(context, '/home', arguments: {
+                            "typeAccount": 0
+                          })
+                        });
+                    }
+                    else {
+                      print("FALHA");
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {

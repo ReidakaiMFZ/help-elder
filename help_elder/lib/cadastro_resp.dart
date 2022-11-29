@@ -1,3 +1,4 @@
+// typeAccount 1
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -128,6 +129,7 @@ class CadastroResp extends StatelessWidget {
                     );
                   }).toList(), onChanged: (String? value) { 
                     if (value == 'Cadastro de funcionário') {
+                      Navigator.pop(context);
                       Navigator.pushNamed(context, '/cadFunc');
                     }
                    },
@@ -161,7 +163,9 @@ class CadastroResp extends StatelessWidget {
                           })
                         });
                       Navigator.pop(context);
-                      Navigator.pushNamed(context, '/home');
+                      Navigator.pushNamed(context, '/home', arguments: {
+                        "typeAccount": 1
+                      });
                     } else {
                       showDialog(
                         context: context,

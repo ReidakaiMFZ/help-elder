@@ -1,14 +1,15 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, avoid_function_literals_in_foreach_calls
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:help_elder/estoque.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore db = FirebaseFirestore.instance;
-FirebaseMessaging messaging = FirebaseMessaging.instance;
+List<Widget> data = [];
+int avoidLoop = 0;
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -21,7 +22,7 @@ class _HomeState extends State<Home>{
   void initState() {
     super.initState();
   }
-
+  int page = 0;
   Widget topic(String name, {String photo='https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg'}){
     return Flexible(
       child: Container(
@@ -62,7 +63,9 @@ class _HomeState extends State<Home>{
               child: InkWell(
                 child: Text(name),
                 onTap: (){
-                  Navigator.pushNamed(context, '/chat');
+                  Navigator.pushNamed(context, '/chat', arguments: {
+                    "receiver": "maconha"
+                  });
                 },
               ),
             ),
@@ -71,18 +74,67 @@ class _HomeState extends State<Home>{
       ),
     );   
   }
-
-  int page = 0;
+  
+  Future<void> getContacts(int typeAccount) async {
+    // List<Widget> list = [];
+    if (typeAccount == 0){
+      await db.collection('idoso').where("idFunc", isEqualTo: auth.currentUser!.uid).get().then((value) =>{
+        value.docs.forEach((older) {
+          db.doc('responsavel/${older.data()['idResp']}').get().then((value) => {
+            data.add(topic(value.data()!['name'])),
+          });
+        })
+      });
+    } else {
+      await db.collection('idoso').where("idResp", isEqualTo: auth.currentUser!.uid).get()
+      .then((value) =>{
+        value.docs.forEach((older) {
+          db.doc('funcionario/${older.data()['idFunc']}').get()
+          .then((value) => {
+            data.add(topic(value.data()!['email'])),
+          });
+        })
+      });
+    }
+    // return list;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final data =[];
+    final args = ModalRoute.of(context)!.settings.arguments as Map?;
+    final List<Widget> veio;
+
     print(auth.currentUser);
-    messaging.getToken().then(print);
+    print(data);
+
+      getContacts(args!['typeAccount']).then((_) {
+        if(avoidLoop == 0){
+          setState((){
+            print("refreshing");
+            avoidLoop = 1;
+          });
+        }
+      });
+    
+
+    if (args['typeAccount'] == 0){
+      veio = [
+            IconButton(
+              onPressed: (){
+                Navigator.pop(context);
+                Navigator.pushNamed(context, "/cadVeio");
+              },
+              icon: const Icon(Icons.add),
+            ),
+          ];
+    } else {
+      veio = [];
+    }
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text("Help Elder"),
+          actions: veio,
         ),
         bottomNavigationBar: NavigationBar(
             backgroundColor: Colors.blue,
@@ -107,10 +159,7 @@ class _HomeState extends State<Home>{
             Flex(
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.down,
-              children: [
-                for (var i = 0; i < data.length; i++)
-                  topic("name"),
-              ],
+              children: [...data],
           ) : const Inventory(),
         ),
       ),

@@ -1,7 +1,6 @@
 // import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,7 +36,7 @@ void main() async {
   runApp(MaterialApp(
     home: const Test(),
     routes: <String, WidgetBuilder>{
-      '/home': (context) =>  auth.currentUser == null ? const Login(): const Home(),
+      '/home': (context) =>  const Home(),
       '/login': (context) => const Login(),
       '/cadResp': (context) => const CadastroResp(),
       '/cadFunc': (context) => const CadastroFunc(),

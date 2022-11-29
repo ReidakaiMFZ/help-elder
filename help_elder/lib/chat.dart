@@ -11,10 +11,10 @@ import 'package:firebase_database/firebase_database.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 User? user = auth.currentUser;
-String receiver = "MTV48ahFfTeUq7rr0FFWJXvz2HA3";
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 FirebaseDatabase database = FirebaseDatabase.instance;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
+
 
 class Chat extends StatefulWidget {
   Chat({Key? key}) : super(key: key);
@@ -29,7 +29,6 @@ class Chat extends StatefulWidget {
 class ChatState extends State<Chat> {
   final TextEditingController messageController = TextEditingController();
   void createMessage(String message, bool isMe) {
-    print("$message $isMe");
     if (isMe) {
       widget.messages.add(ChatBubble(
         clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
@@ -49,14 +48,14 @@ class ChatState extends State<Chat> {
     }
   }
 
-  void storeMessage(String message) {
+  void storeMessage(String message, String receiver) {
     if (messageController.text.isNotEmpty) {
       // final colecao = firestore.collection('messages');
       // colecao.add(
       //   {
       //     'message': message,
       //     'sender': user!.uid,
-      //     'receiver': '',
+      //     'receiver': receiver,
       //     'time': DateTime.now().millisecondsSinceEpoch,
       //   }
       // );
@@ -88,10 +87,8 @@ class ChatState extends State<Chat> {
     await myMessages.once().then((querySnapshot) async {
       for (var doc in querySnapshot.snapshot.children) {
         var message = await doc.ref.get();
-        print(message.value as dynamic);
         serverMessages.add(message.value as dynamic);
       }
-      print(serverMessages);
     });
 
     myMessages =
@@ -109,7 +106,6 @@ class ChatState extends State<Chat> {
     setState(() {
       for (var message in serverMessages) {
         createMessage((message)['message'], user?.uid == (message)['sender']);
-        print(message.toString());
       }
     });
   }
@@ -133,7 +129,7 @@ class ChatState extends State<Chat> {
     //     }
     //   },
     // );
-
+    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map;
     return Scaffold(
       body: Stack(
         children: [
@@ -165,7 +161,7 @@ class ChatState extends State<Chat> {
                   onPressed: () {
                     setState(() {
                       if (messageController.text.isNotEmpty) {
-                        storeMessage(messageController.text);
+                        storeMessage(messageController.text, arguments['receiver']);
                         messageController.clear();
                       }
                     });
