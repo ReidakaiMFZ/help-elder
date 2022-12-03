@@ -1,4 +1,6 @@
 // import 'package:firebase_messaging/firebase_messaging.dart';
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -15,6 +17,7 @@ import 'package:help_elder/estoque.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
+const bool DEBUG = true;
 
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -30,11 +33,10 @@ void main() async {
   );
   
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
   
-
   runApp(MaterialApp(
-    home: const Test(),
+    home: DEBUG ? const Test() : const Home(),
+    debugShowCheckedModeBanner: DEBUG,
     routes: <String, WidgetBuilder>{
       '/home': (context) =>  const Home(),
       '/login': (context) => const Login(),

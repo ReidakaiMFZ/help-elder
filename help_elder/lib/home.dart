@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:help_elder/estoque.dart';
+import 'package:help_elder/list_medicines.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore db = FirebaseFirestore.instance;
@@ -105,19 +105,17 @@ class _HomeState extends State<Home>{
     final List<Widget> veio;
 
     print(auth.currentUser);
-    print(data);
 
-      getContacts(args!['typeAccount']).then((_) {
         if(avoidLoop == 0){
+          getContacts(args!['typeAccount']).then((_) =>
           setState((){
             print("refreshing");
             avoidLoop = 1;
-          });
+          }));
         }
-      });
-    
+    print(data);
 
-    if (args['typeAccount'] == 0){
+    if (args!['typeAccount'] == 0){
       veio = [
             IconButton(
               onPressed: (){
@@ -160,7 +158,7 @@ class _HomeState extends State<Home>{
               direction: Axis.vertical,
               verticalDirection: VerticalDirection.down,
               children: [...data],
-          ) : const Inventory(),
+          ) : args['typeAccount'] == 0? const OlderList(account: 0) : const OlderList(account: 1),
         ),
       ),
     );

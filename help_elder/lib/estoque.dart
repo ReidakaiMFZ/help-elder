@@ -1,8 +1,10 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, no_logic_in_create_state
+// Cspell:ignore firestore
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseFirestore db = FirebaseFirestore.instance;
-// Cspell:ignore firestore
 
 Future<List<Medicine>> getMedicine(String id) async {
   var value =
@@ -19,7 +21,7 @@ Future<List<Medicine>> getMedicine(String id) async {
       .toList();
 }
 
-const elderId = 'aGbRsMpZJVOFApgdyVPi';
+// const elderId = 'aGbRsMpZJVOFApgdyVPi';
 typedef _Medicine = Map<String, dynamic>;
 
 class Medicine {
@@ -36,10 +38,11 @@ void publishMedicine(String id, List<Medicine> medicines) {
   });
 }
 
-void addMedicine() {}
-
 class Inventory extends StatefulWidget {
-  const Inventory({super.key});
+
+  const Inventory({
+    super.key,
+  });
 
   @override
   State<Inventory> createState() => _InventoryState();
@@ -50,13 +53,15 @@ class _InventoryState extends State<Inventory> {
   @override
   void initState() {
     super.initState();
-    getMedicine(elderId).then((value) => setState(() {
-          medicines = value;
-        }));
+    // getMedicine(args elderId).then((value) => setState(() {
+    //   medicines = value;
+    // }));
   }
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map?;
+    print(args!.values);
     if (medicines != null) {
       return Scaffold(
         body: SingleChildScrollView(
@@ -130,7 +135,7 @@ class _InventoryState extends State<Inventory> {
                                             int.parse(consumeController.text);
                                       });
                                       publishMedicine(
-                                          elderId, medicines!);
+                                          args!['elderId'], medicines!);
                                       Navigator.pop(context);
                                     },
                                     child: const Text('Salvar'),
@@ -198,7 +203,7 @@ class _InventoryState extends State<Inventory> {
                                 int.parse(qtdController.text),
                                 int.parse(consumeController.text)));
                           });
-                          publishMedicine('aGbRsMpZJVOFApgdyVPi', medicines!);
+                          publishMedicine(args!['elderId'], medicines!);
                           Navigator.pop(context);
                         } else {
                           showDialog(
@@ -239,26 +244,5 @@ class _InventoryState extends State<Inventory> {
         ),
       );
     }
-    // create a list with the medicines
-    // return FutureBuilder(
-    //     //Cspell:ignore aGbRsMpZJVOFApgdyVPi
-    //     future: getMedicine('aGbRsMpZJVOFApgdyVPi'),
-    //     builder: ((context, snapshot) {
-    //       if (snapshot.hasData) {
-    //         ListView.builder(
-    //           itemCount: (snapshot.data as List<Medicine>).length,
-    //           itemBuilder: (context, index) {
-    //             return ListTile(
-    //               title: Text((snapshot.data as List<Medicine>)[index].name),
-    //               subtitle: Text(
-    //                   (snapshot.data as List<Medicine>)[index].qtd.toString()),
-    //             );
-    //           },
-    //         );
-    //       } else {
-    //         return const Center(child: CircularProgressIndicator());
-    //       }
-    //       throw UnimplementedError();
-    //     }));
   }
 }
