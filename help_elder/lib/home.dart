@@ -15,87 +15,101 @@ class Home extends StatefulWidget {
 
   @override
   _HomeState createState() => _HomeState();
-
 }
-class _HomeState extends State<Home>{
+
+class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
   }
+
   int page = 0;
-  Widget topic(String name, String uid, {String photo='https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg'}){
+  Widget topic(String name, String uid,
+      {String photo =
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg'}) {
     return Flexible(
       child: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Color(0xFFD9D9D9),
-              width: 2.0,
-            )
-          )
-        ),
-        child: Row(
-          children: [
-            Padding (
-              padding: const EdgeInsets.only(
-                top: 10.0,
-                left: 10.0,
-                right: 10.0,
-              ),
-              child: Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: Image.network(photo).image,
-                    fit: BoxFit.fill,
+          decoration: const BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+            color: Color(0xFFD9D9D9),
+            width: 2.0,
+          ))),
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  top: 10.0,
+                  left: 10.0,
+                  right: 10.0,
+                ),
+                child: Container(
+                  width: 70,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: Image.network(photo).image,
+                      fit: BoxFit.fill,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                left: 10,
-                top: 10,
-                right: 10,
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 10,
+                  top: 10,
+                  right: 10,
+                ),
+                child: InkWell(
+                  child: Text(name),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/chat',
+                        arguments: {"receiver": uid});
+                  },
+                ),
               ),
-              child: InkWell(
-                child: Text(name),
-                onTap: (){
-                  Navigator.pushNamed(context, '/chat', arguments: {
-                    "receiver": uid
-                  });
-                },
-              ),
-            ),
-          ],
-        )
-      ),
-    );   
+            ],
+          )),
+    );
   }
-  
+
   Future<void> getContacts(int typeAccount) async {
-    if (typeAccount == 0){
-      await db.collection('idoso').where("idFunc", isEqualTo: auth.currentUser!.uid).get().then((value) =>{
-        value.docs.forEach((older) {
-          db.doc('responsavel/${older.data()['idResp']}').get()
+    if (typeAccount == 0) {
+      await db
+          .collection('idoso')
+          .where("idFunc", isEqualTo: auth.currentUser!.uid)
+          .get()
           .then((value) => {
-            data.add(topic(value.data()!['email'], older.data()['idResp'])), 
-          });
-        })
-      });
+                value.docs.forEach((older) {
+                  db
+                      .doc('responsavel/${older.data()['idResp']}')
+                      .get()
+                      .then((value) => {
+                            data.add(topic(value.data()!['email'],
+                                older.data()['idResp'])),
+                          });
+                })
+              });
     } else {
-      await db.collection('idoso').where("idResp", isEqualTo: auth.currentUser!.uid).get()
-      .then((value) =>{
-        value.docs.forEach((older) {
-          db.doc('funcionario/${older.data()['idFunc']}').get()
+      print('entrou');
+      await db
+          .collection('idoso')
+          .where("responsaveis", arrayContains: auth.currentUser!.uid)
+          .get()
           .then((value) => {
-            data.add(topic(value.data()!['email'], older.data()['idFunc'])),
-            print(value.data())
-          });
-        })
-      });
+                print(auth.currentUser!.uid),
+                value.docs.forEach((older) {
+                  db
+                      .doc('funcionario/${older.data()['idFunc']}')
+                      .get()
+                      .then((value) => {
+                            data.add(topic(value.data()!['email'],
+                                older.data()['idFunc'])),
+                            print(value.data())
+                          });
+                })
+              });
     }
   }
 
@@ -104,29 +118,73 @@ class _HomeState extends State<Home>{
     final args = ModalRoute.of(context)!.settings.arguments as Map?;
     final List<Widget> veio;
 
-    print(auth.currentUser);
-
-        if(avoidLoop == 0){
-          getContacts(args!['typeAccount']).then((_) =>
-          setState((){
+    print(avoidLoop);
+    if (avoidLoop == 0) {
+      getContacts(args!['typeAccount']).then((_) => setState(() {
             print("refreshing");
             avoidLoop = 1;
           }));
-        }
+    }
     print(data);
 
-    if (args!['typeAccount'] == 0){
+    if (args!['typeAccount'] == 0) {
       veio = [
-            IconButton(
-              onPressed: (){
-                Navigator.pop(context);
-                Navigator.pushNamed(context, "/cadVeio");
-              },
-              icon: const Icon(Icons.add),
-            ),
-          ];
+        IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, "/cadVeio");
+          },
+          icon: const Icon(Icons.add),
+        ),
+      ];
     } else {
-      veio = [];
+      veio = [
+        IconButton(
+            onPressed: () {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    final TextEditingController CpfController =
+                        TextEditingController();
+                    return AlertDialog(
+                      title: const Text("Adicionar Idoso"),
+                      content: TextField(
+                        decoration: const InputDecoration(
+                          hintText: "Digite o CPF do idoso",
+                        ),
+                        controller: CpfController,
+                      ),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Cancelar')),
+                        TextButton(
+                            onPressed: (() {
+                              db
+                                  .collection('idoso')
+                                  .where("cpf", isEqualTo: CpfController.text)
+                                  .get()
+                                  .then((value) => {
+                                        value.docs.forEach((element) {
+                                          db.doc('idoso/${element.id}').update({
+                                            'responsaveis':
+                                                FieldValue.arrayUnion(
+                                                    [auth.currentUser!.uid])
+                                          });
+                                        })
+                                      });
+                              avoidLoop = 0;
+                              Navigator.pop(context);
+                            }),
+                            child: const Text('Adicionar'))
+                      ],
+                    );
+                  });
+            },
+            icon: const Icon(Icons.add)),
+      ];
     }
     return MaterialApp(
       home: Scaffold(
@@ -135,30 +193,33 @@ class _HomeState extends State<Home>{
           actions: veio,
         ),
         bottomNavigationBar: NavigationBar(
-            backgroundColor: Colors.blue,
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.comment),
-                label: "Chat",
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.medical_information),
-                label: "Remédios",
-              ),
-            ],
-            onDestinationSelected: (int index) {
-              setState(() {
-                page = index;
-              });
-            },
-          ),
+          backgroundColor: Colors.blue,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.comment),
+              label: "Chat",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.medical_information),
+              label: "Remédios",
+            ),
+          ],
+          onDestinationSelected: (int index) {
+            setState(() {
+              page = index;
+            });
+          },
+        ),
         body: Center(
-          child: page == 0 ? 
-            Flex(
-              direction: Axis.vertical,
-              verticalDirection: VerticalDirection.down,
-              children: [...data],
-          ) : args['typeAccount'] == 0? const OlderList(account: 0) : const OlderList(account: 1),
+          child: page == 0
+              ? Flex(
+                  direction: Axis.vertical,
+                  verticalDirection: VerticalDirection.down,
+                  children: [...data],
+                )
+              : args['typeAccount'] == 0
+                  ? const OlderList(account: 0)
+                  : const OlderList(account: 1),
         ),
       ),
     );
