@@ -1,6 +1,7 @@
 // ignore_for_file: library_private_types_in_public_api, avoid_function_literals_in_foreach_calls, prefer_typing_uninitialized_variables
 
 import 'dart:collection';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +14,7 @@ FirebaseFirestore db = FirebaseFirestore.instance;
 List<Widget> data = [];
 int avoidLoop = 0;
 List<Widget> veio = [];
+
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -25,10 +27,10 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
   }
-  
+
   int page = 0;
 
-  Future<void> setOlderAdd() async{
+  Future<void> setOlderAdd() async {
     final prefs = await SharedPreferences.getInstance();
 
     if (prefs.getInt('typeAccount') == 0) {
@@ -91,19 +93,20 @@ class _HomeState extends State<Home> {
       ];
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     print(data);
     print(veio);
     if (avoidLoop == 0) {
       getContacts(context).then((_) => {
-      setOlderAdd(),
-      setState(() {
-        print("refreshing");
-        avoidLoop = 1;
-      })});
-    } 
+            setOlderAdd(),
+            setState(() {
+              print("refreshing");
+              avoidLoop = 1;
+            })
+          });
+    }
     // else if (prefs.getBool('reload') == true){
     //     setState(() {
     //       prefs.setBool('reload', false);
@@ -116,24 +119,24 @@ class _HomeState extends State<Home> {
           title: const Text("Help Elder"),
           actions: veio,
         ),
-        bottomNavigationBar: NavigationBar(
-          backgroundColor: Colors.blue,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.comment),
-              label: "Chat",
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.medical_information),
-              label: "Remédios",
-            ),
-          ],
-          onDestinationSelected: (int index) {
-            setState(() {
-              page = index;
-            });
-          },
-        ),
+        // bottomNavigationBar: NavigationBar(
+        //   backgroundColor: Colors.blue,
+        //   destinations: const [
+        //     NavigationDestination(
+        //       icon: Icon(Icons.comment),
+        //       label: "Chat",
+        //     ),
+        //     NavigationDestination(
+        //       icon: Icon(Icons.medical_information),
+        //       label: "Remédios",
+        //     ),
+        //   ],
+        //   onDestinationSelected: (int index) {
+        //     setState(() {
+        //       page = index;
+        //     });
+        //   },
+        // ),
         body: Center(
           child: page == 0
               ? Flex(
@@ -150,7 +153,8 @@ class _HomeState extends State<Home> {
 
 Widget topic(String name, String uid, BuildContext context,
     {String photo =
-        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg'}) {
+        'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg',
+    List<dynamic> responsaveis = const []}) {
   return Flexible(
     child: Container(
         decoration: const BoxDecoration(
@@ -187,9 +191,108 @@ Widget topic(String name, String uid, BuildContext context,
               ),
               child: InkWell(
                 child: Text(name),
-                onTap: () {
-                  Navigator.pushNamed(context, '/chat',
-                      arguments: {"receiver": uid});
+                onTap: () async {
+                  if (responsaveis.isNotEmpty) {
+                    print(responsaveis);
+                    var responsaveisData = [];
+                    for (var i = 0; i < responsaveis.length; i++) {
+                      await db
+                          .collection('responsavel')
+                          .doc(responsaveis[i])
+                          .get()
+                          .then((value) => {
+                                responsaveisData.add({
+                                  'uid': responsaveis[i],
+                                  'name': value.data()!['email'],
+                                })
+                              });
+                    }
+                    print(responsaveisData);
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Responsáveis'),
+                            content: Column(
+                              children: [
+                                for (var i = 0;
+                                    i < responsaveisData.length;
+                                    i++)
+                                  ListTile(
+                                    title: Text(responsaveisData[i]['name']),
+                                    onTap: () {
+                                      // Navigator.pop(context);
+                                      Navigator.pushNamed(context, '/chat',
+                                          arguments: {
+                                            // 'name': responsaveisData[i]['nome'],
+                                            'receiver': responsaveisData[i]
+                                                ['uid'],
+                                            // 'photo': responsaveisData[i]['photo'],
+                                          });
+                                    },
+                                  )
+                              ],
+                            ),
+                          );
+                        });
+                    //Show a dialog with the responsibles
+                    // showDialog(
+                    //     context: context,
+                    //     builder: (context) {
+                    //       return AlertDialog(
+                    //         title: const Text("Responsáveis"),
+                    //         content: SizedBox(
+                    //           height: 200,
+                    //           child: ListView.builder(
+                    //               shrinkWrap: true,
+                    //               itemCount: responsaveis.length,
+                    //               itemBuilder: (context, index) {
+                    //                 return FutureBuilder(
+                    //                     future: db
+                    //                         .collection('responsavel')
+                    //                         .doc(responsaveis[index])
+                    //                         .get(),
+                    //                     builder: (context, snapshot) {
+                    //                       if (snapshot.hasData) {
+                    //                         return TextButton(
+                    //                             child: Text((snapshot.data!
+                    //                                     as Map<String,
+                    //                                         String>)['nome'] ??
+                    //                                 'Nome não encontrado'),
+                    //                             onPressed: () =>
+                    //                                 Navigator.pushNamed(context,
+                    //                                     '/chat', arguments: {
+                    //                                   "receiver":
+                    //                                       responsaveis[index]
+                    //                                 }));
+                    //                       } else {
+                    //                         return const Text("Carregando...");
+                    //                       }
+                    //                     });
+                    //               }),
+                    //         ),
+                    //         actions: [
+                    //           TextButton(
+                    //               onPressed: () {
+                    //                 Navigator.pop(context);
+                    //               },
+                    //               child: const Text('Fechar'))
+                    //         ],
+                    //       );
+                    //     });
+                  }
+                  // Navigator.pushNamed(context, '/chat',
+                  //     arguments: {"receiver": uid});
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: IconButton(
+                icon: Icon(Icons.medical_services_rounded),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/estoque',
+                      arguments: {"elderId": uid});
                 },
               ),
             ),
@@ -202,37 +305,56 @@ Future<void> getContacts(BuildContext context) async {
   final prefs = await SharedPreferences.getInstance();
   List<String> uids = [];
   if (prefs.getInt("typeAccount") == 0) {
-    await db.collection('idoso').where("idFunc", isEqualTo: auth.currentUser!.uid).get()
+    await db
+        .collection('idoso')
+        .where("idFunc", isEqualTo: auth.currentUser!.uid)
+        .get()
         .then((value) => {
-          print(value.docs),
+              print(value.docs),
               value.docs.forEach((older) {
-                if (older.data()['idResp'] != null){
-                  if (uids.any((element) => element == older.data()['idResp'])) {}
-                  else{
+                if (older.data()['idResp'] != null) {
+                  if (uids
+                      .any((element) => element == older.data()['idResp'])) {
+                  } else {
                     uids.add(older.data()['idResp']);
-                    db.doc('responsavel/${older.data()['idResp']}').get()
-                    .then((value) => {
-                      print("encontrei: ${value.data()}"),
-                      data.add(topic(value.data()!['email'], older.data()['idResp'], context)),
-                    });
+                    db
+                        .doc('responsavel/${older.data()['idResp']}')
+                        .get()
+                        .then((value) => {
+                              print("encontrei: ${value.data()}"),
+                              data.add(topic(value.data()!['email'],
+                                  older.data()['idResp'], context)),
+                            });
                   }
                 }
               })
             });
   } else {
     print('entrou');
-    await db.collection('idoso').where("responsaveis", arrayContains: auth.currentUser!.uid).get()
-    .then((value) => {
-      print(auth.currentUser!.uid),
-      value.docs.forEach((older) {
-        if(older.data()['idFunc'] != null){
-          db.doc('funcionario/${older.data()['idFunc']}').get()
-          .then((value) => {
-            data.add(topic(value.data()!['email'], older.data()['idFunc'], context)),
-            print(value.data())
-          });
-        }
-      })
-    });
+    await db
+        .collection('idoso')
+        .where("responsaveis", arrayContains: auth.currentUser!.uid)
+        .get()
+        .then((value) => {
+              print(auth.currentUser!.uid),
+              value.docs.forEach((older) {
+                data.add(topic(
+                  older.data()['nome'],
+                  older.id,
+                  context,
+                  responsaveis: older.data()['responsaveis'],
+                ));
+                // if (older.data()['idFunc'] != null) {
+                //   db
+                //       .doc('funcionario/${older.data()['idFunc']}')
+                //       .get()
+                //       .then((value) => {
+                //             data.add(topic(value.data()!['email'],
+                //                 older.data()['idFunc'], context)),
+                //             print(value.data())
+                //           });
+                // }
+              })
+            });
   }
 }
