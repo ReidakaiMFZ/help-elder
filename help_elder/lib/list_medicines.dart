@@ -1,8 +1,9 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_function_literals_in_foreach_calls
+// ignore_for_file: library_private_types_in_public_api, avoid_function_literals_in_foreach_calls, prefer_typing_uninitialized_variables
 
 import "package:flutter/material.dart";
 import "package:cloud_firestore/cloud_firestore.dart";
 import "package:firebase_auth/firebase_auth.dart";
+import 'package:shared_preferences/shared_preferences.dart';
 
 final FirebaseFirestore firebase = FirebaseFirestore.instance;
 final FirebaseAuth auth = FirebaseAuth.instance;
@@ -10,21 +11,17 @@ List<Widget> data = [];
 int avoidLoop = 0;
 
 class OlderList extends StatefulWidget{
-  final int account;
   const OlderList({
     super.key,
-    required this.account
     });
 
   @override
   // ignore: no_logic_in_create_state
-  _OlderListState createState() => _OlderListState(account);
+  _OlderListState createState() => _OlderListState();
 
 }
 
 class _OlderListState extends State<OlderList>{
-  final int account;
-  _OlderListState(this.account);
   @override
   void initState() {
     super.initState();
@@ -32,6 +29,7 @@ class _OlderListState extends State<OlderList>{
 
   @override
   Widget build(BuildContext context){
+    
     Widget tile(String name, String uid, {String photo='https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg'}){
     return Flexible(
       child: Container(
@@ -73,9 +71,10 @@ class _OlderListState extends State<OlderList>{
                 child: Text(name),
                 onTap: (){
                   print("pai??????????????????????");
-                  // Navigator.pushNamed(context, "/estoque", arguments: {
-                  //   "elderId": uid
-                  // });
+                  Navigator.pushNamed(context, '/estoque', arguments: {
+                    "elderId": uid
+                  });
+                  
                   // Navigator.pushNamed(context, '/estoque');
                 },
               ),
@@ -87,7 +86,8 @@ class _OlderListState extends State<OlderList>{
   }
     
     Future<void> getOlder() async{
-      if (account == 0){
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.getInt('typeAccount') == 0){
         await firebase.collection('idoso').where("idFunc", isEqualTo: auth.currentUser!.uid).get()
         .then((value) {
           value.docs.forEach((older) {
@@ -95,7 +95,7 @@ class _OlderListState extends State<OlderList>{
           });
         });
       }
-      else if(account ==1 ){
+      else if(prefs.getInt('typeAccount') ==1 ){
         await firebase.collection('idoso').where("idResp", isEqualTo: auth.currentUser!.uid).get()
         .then((value) {
           value.docs.forEach((older) {

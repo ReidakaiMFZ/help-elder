@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 // import 'package:cpf_cnpj_validator/cpf_validator.dart';
-
-import 'package:help_elder/cadastro_resp.dart';
-import 'package:help_elder/cadastro_func.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
+
+var prefs;
 
 class CadastroVeio extends StatelessWidget {
   const CadastroVeio({Key? key}) : super(key: key);
@@ -22,6 +21,7 @@ class CadastroVeio extends StatelessWidget {
   Widget build(BuildContext context) {
     final TextEditingController nomeController = TextEditingController();
     final TextEditingController cpfController = TextEditingController();
+    SharedPreferences.getInstance().then((value) => prefs = value);
 
     AlertDialog alert = AlertDialog(
       title: const Text("Erro"),
@@ -37,10 +37,6 @@ class CadastroVeio extends StatelessWidget {
     );
 
     return MaterialApp(
-      routes: <String, WidgetBuilder>{
-        '/cadResp': (context) => const CadastroResp(),
-        '/cadFunc': (context) => const CadastroFunc(),
-      },
       home: Scaffold(
         body: SizedBox(
             width: 500,
@@ -114,10 +110,10 @@ class CadastroVeio extends StatelessWidget {
                             "idFunc": auth.currentUser!.uid,
                             "responsaveis": []
                           }).whenComplete(() => {
-                                Navigator.pop(context),
-                                Navigator.pushNamed(context, '/home',
-                                    arguments: {"typeAccount": 0})
-                              });
+                            prefs.setBool("reload", true),
+                            Navigator.pop(context),
+                            Navigator.pushNamed(context, '/home')
+                          });
                         } else {
                           print("FALHA");
                           showDialog(

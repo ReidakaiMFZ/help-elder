@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:help_elder/login.dart';
 import 'package:help_elder/cadastro_resp.dart';
@@ -31,7 +32,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+  getBackVar();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   
   runApp(MaterialApp(
@@ -48,10 +49,13 @@ void main() async {
     },
   ));
 }
-
+void getBackVar() async {
+  final prefs = await SharedPreferences.getInstance();
+  print("Login type: ${prefs.getInt("typeAccount")}");
+  print("Can reload? ${prefs.getBool("reload")}");
+}
 class Test extends StatelessWidget {
   const Test({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -105,11 +109,17 @@ class Test extends StatelessWidget {
                 onPressed: () => Navigator.pushNamed(context, '/estoque'),
                 child: const Text("Estoque")
               ),
+               ElevatedButton(
+                onPressed: () {
+                  getBackVar();
+                },
+                child: const Text("Ver tipo de login")
+              ),
               ElevatedButton(
                 onPressed: () {
                   auth.signOut();
                   print("saiu");
-                }, 
+                },
                 child: const Text("Sair")
               ),
             ],

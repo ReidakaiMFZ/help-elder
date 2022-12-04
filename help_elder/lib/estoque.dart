@@ -53,7 +53,7 @@ class _InventoryState extends State<Inventory> {
   @override
   void initState() {
     super.initState();
-    // getMedicine(args elderId).then((value) => setState(() {
+    // getMedicine(args['elderId']).then((value) => setState(() {
     //   medicines = value;
     // }));
   }
@@ -135,7 +135,7 @@ class _InventoryState extends State<Inventory> {
                                             int.parse(consumeController.text);
                                       });
                                       publishMedicine(
-                                          args!['elderId'], medicines!);
+                                          args['elderId'], medicines!);
                                       Navigator.pop(context);
                                     },
                                     child: const Text('Salvar'),
@@ -203,7 +203,7 @@ class _InventoryState extends State<Inventory> {
                                 int.parse(qtdController.text),
                                 int.parse(consumeController.text)));
                           });
-                          publishMedicine(args!['elderId'], medicines!);
+                          publishMedicine(args['elderId'], medicines!);
                           Navigator.pop(context);
                         } else {
                           showDialog(

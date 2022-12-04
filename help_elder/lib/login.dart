@@ -1,9 +1,10 @@
 // ignore_for_file: invalid_return_type_for_catch_error, library_private_types_in_public_api
+// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// ignore_for_file: prefer_const_constructors
-// ignore_for_file: prefer_const_literals_to_create_immutables
+import 'package:shared_preferences/shared_preferences.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -131,18 +132,22 @@ class _LoginState extends State<Login> {
                             fontSize: 20, 
                             fontWeight: FontWeight.bold
                           )),
-                        onPressed: () {
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
                           auth.signInWithEmailAndPassword(
                             email: emailController.text,
                             password: passController.text)
                           .then((x) => {
                             if (typeLogin == 0){
+                              prefs.setInt("typeAccount", 0),
+                      
                               Navigator.of(context).pop(),
                               Navigator.pushNamed(context, '/home', arguments: {
                                 "typeAccount": 0,
                               }),
                             }
                             else{
+                              prefs.setInt("typeAccount", 1),
                               Navigator.of(context).pop(),
                               Navigator.pushNamed(context, '/home', arguments: {
                                 "typeAccount": 1,
