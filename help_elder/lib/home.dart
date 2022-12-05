@@ -154,7 +154,8 @@ class _HomeState extends State<Home> {
 Widget topic(String name, String uid, BuildContext context,
     {String photo =
         'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/925px-Unknown_person.jpg',
-    List<dynamic> responsaveis = const []}) {
+    List<dynamic> responsaveis = const [],
+    String funcionario = ''}) {
   return Flexible(
     child: Container(
         decoration: const BoxDecoration(
@@ -235,51 +236,30 @@ Widget topic(String name, String uid, BuildContext context,
                             ),
                           );
                         });
-                    //Show a dialog with the responsibles
-                    // showDialog(
-                    //     context: context,
-                    //     builder: (context) {
-                    //       return AlertDialog(
-                    //         title: const Text("Responsáveis"),
-                    //         content: SizedBox(
-                    //           height: 200,
-                    //           child: ListView.builder(
-                    //               shrinkWrap: true,
-                    //               itemCount: responsaveis.length,
-                    //               itemBuilder: (context, index) {
-                    //                 return FutureBuilder(
-                    //                     future: db
-                    //                         .collection('responsavel')
-                    //                         .doc(responsaveis[index])
-                    //                         .get(),
-                    //                     builder: (context, snapshot) {
-                    //                       if (snapshot.hasData) {
-                    //                         return TextButton(
-                    //                             child: Text((snapshot.data!
-                    //                                     as Map<String,
-                    //                                         String>)['nome'] ??
-                    //                                 'Nome não encontrado'),
-                    //                             onPressed: () =>
-                    //                                 Navigator.pushNamed(context,
-                    //                                     '/chat', arguments: {
-                    //                                   "receiver":
-                    //                                       responsaveis[index]
-                    //                                 }));
-                    //                       } else {
-                    //                         return const Text("Carregando...");
-                    //                       }
-                    //                     });
-                    //               }),
-                    //         ),
-                    //         actions: [
-                    //           TextButton(
-                    //               onPressed: () {
-                    //                 Navigator.pop(context);
-                    //               },
-                    //               child: const Text('Fechar'))
-                    //         ],
-                    //       );
-                    //     });
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Funcionário'),
+                            content: Column(
+                              children: [
+                                ListTile(
+                                  title: Text(funcionario),
+                                  onTap: () {
+                                    // Navigator.pop(context);
+                                    Navigator.pushNamed(context, '/chat',
+                                        arguments: {
+                                          // 'name': responsaveisData[i]['nome'],
+                                          'receiver': uid,
+                                          // 'photo': responsaveisData[i]['photo'],
+                                        });
+                                  },
+                                )
+                              ],
+                            ),
+                          );
+                        });
                   }
                   // Navigator.pushNamed(context, '/chat',
                   //     arguments: {"receiver": uid});
