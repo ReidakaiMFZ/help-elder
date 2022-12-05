@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore db = FirebaseFirestore.instance;
-// int avoidLoop = 0;
+int avoidLoop = 0;
 List<Widget> data = [];
 List<Widget> veio = [];
 
