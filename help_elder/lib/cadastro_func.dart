@@ -1,9 +1,12 @@
 // typeAccount 0
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:help_elder/cadastro_resp.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -79,7 +82,7 @@ class CadastroFunc extends StatelessWidget {
                   SizedBox(
                     width: 300,
                     child: TextField(
-                      controller: emailController,
+                      controller: nomeController,
                       decoration: const InputDecoration(
                         labelText: 'Nome',
                       ),
@@ -157,8 +160,11 @@ class CadastroFunc extends StatelessWidget {
                         ),
                       )),
                       child: const Text('Cadastrar'),
-                      onPressed: () {
-                        if (emailController.text.isNotEmpty &&
+                      onPressed: () async {
+                        final prefs = await SharedPreferences.getInstance();
+                        prefs.setInt('typeAccount', 0);
+                        if (nomeController.text.isNotEmpty &&
+                            emailController.text.isNotEmpty &&
                             passController.text.isNotEmpty &&
                             passController.text == confirmPassController.text) {
                           auth
@@ -175,8 +181,7 @@ class CadastroFunc extends StatelessWidget {
                                       "FCMToken": token,
                                     })
                                   });
-                          Navigator.pop(context);
-                          Navigator.pushNamed(context, '/home');
+                          Navigator.popAndPushNamed(context, '/login');
                         } else {
                           showDialog(
                             context: context,

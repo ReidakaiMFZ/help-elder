@@ -32,18 +32,18 @@ class ChatState extends State<Chat> {
         clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
         alignment: Alignment.topRight,
         margin: const EdgeInsets.only(top: 20),
-        backGroundColor: Color.fromARGB(255, 59, 138, 212),
+        backGroundColor: const Color.fromARGB(255, 59, 138, 212),
         child: Text(message,
-            style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
+            style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
       ));
     } else {
       widget.messages.add(ChatBubble(
         clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
         alignment: Alignment.topLeft,
         margin: const EdgeInsets.only(top: 20),
-        backGroundColor: Color.fromARGB(255, 74, 173, 115),
+        backGroundColor: const Color.fromARGB(255, 74, 173, 115),
         child: Text(message,
-            style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
+            style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
       ));
     }
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore db = FirebaseFirestore.instance;
@@ -159,8 +160,11 @@ class CadastroResp extends StatelessWidget {
                         ),
                       )),
                       child: const Text('Cadastrar'),
-                      onPressed: () {
-                        if (emailController.text.isNotEmpty &&
+                      onPressed: () async {
+                        final prefs = await SharedPreferences.getInstance();
+                        prefs.setInt('typeAccount', 1);
+                        if (nomeController.text.isNotEmpty && 
+                            emailController.text.isNotEmpty &&
                             passController.text.isNotEmpty &&
                             passController.text == confirmPassController.text) {
                           auth
@@ -178,9 +182,7 @@ class CadastroResp extends StatelessWidget {
                                       "cpf": cpfController.text,
                                     })
                                   });
-                          Navigator.pop(context);
-                          Navigator.pushNamed(context, '/home',
-                              arguments: {"typeAccount": 1});
+                          Navigator.popAndPushNamed(context, '/home');
                         } else {
                           showDialog(
                             context: context,

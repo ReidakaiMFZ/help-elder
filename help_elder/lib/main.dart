@@ -36,7 +36,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   
   runApp(MaterialApp(
-    home: DEBUG ? const Test() : const Home(),
+    home: DEBUG ? const Test() : auth.currentUser == null ? const Login() : const Home(),
     debugShowCheckedModeBanner: DEBUG,
     routes: <String, WidgetBuilder>{
       '/home': (context) =>  const Home(),

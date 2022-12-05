@@ -1,7 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api, avoid_function_literals_in_foreach_calls, prefer_typing_uninitialized_variables
-
-import 'dart:collection';
-import 'dart:ffi';
+// ignore_for_file: library_private_types_in_public_api, avoid_function_literals_in_foreach_calls, prefer_typing_uninitialized_variables, void_checks
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,8 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseFirestore db = FirebaseFirestore.instance;
+// int avoidLoop = 0;
 List<Widget> data = [];
-int avoidLoop = 0;
 List<Widget> veio = [];
 
 class Home extends StatefulWidget {
@@ -27,126 +24,13 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
   }
-
-  int page = 0;
-
-  Future<void> setOlderAdd() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    if (prefs.getInt('typeAccount') == 0) {
-      veio = [
-        IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, "/cadVeio");
-          },
-          icon: const Icon(Icons.add),
-        ),
-      ];
-    } else {
-      veio = [
-        IconButton(
-            onPressed: () {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    final TextEditingController cpfController =
-                        TextEditingController();
-                    return AlertDialog(
-                      title: const Text("Adicionar Idoso"),
-                      content: TextField(
-                        decoration: const InputDecoration(
-                          hintText: "Digite o CPF do idoso",
-                        ),
-                        controller: cpfController,
-                      ),
-                      actions: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Cancelar')),
-                        TextButton(
-                            onPressed: (() {
-                              db
-                                  .collection('idoso')
-                                  .where("cpf", isEqualTo: cpfController.text)
-                                  .get()
-                                  .then((value) => {
-                                        value.docs.forEach((element) {
-                                          db.doc('idoso/${element.id}').update({
-                                            'responsaveis':
-                                                FieldValue.arrayUnion(
-                                                    [auth.currentUser!.uid])
-                                          });
-                                        })
-                                      });
-                              avoidLoop = 0;
-                              Navigator.pop(context);
-                            }),
-                            child: const Text('Adicionar'))
-                      ],
-                    );
-                  });
-            },
-            icon: const Icon(Icons.add)),
-      ];
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    print(data);
-    print(veio);
-    if (avoidLoop == 0) {
-      getContacts(context).then((_) => {
-            setOlderAdd(),
-            setState(() {
-              print("refreshing");
-              avoidLoop = 1;
-            })
-          });
-    }
-    // else if (prefs.getBool('reload') == true){
-    //     setState(() {
-    //       prefs.setBool('reload', false);
-    //       print('reload');
-    //     });
-    //   }
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("Help Elder"),
-          actions: veio,
-        ),
-        // bottomNavigationBar: NavigationBar(
-        //   backgroundColor: Colors.blue,
-        //   destinations: const [
-        //     NavigationDestination(
-        //       icon: Icon(Icons.comment),
-        //       label: "Chat",
-        //     ),
-        //     NavigationDestination(
-        //       icon: Icon(Icons.medical_information),
-        //       label: "Remédios",
-        //     ),
-        //   ],
-        //   onDestinationSelected: (int index) {
-        //     setState(() {
-        //       page = index;
-        //     });
-        //   },
-        // ),
-        body: Center(
-          child: page == 0
-              ? Flex(
-                  direction: Axis.vertical,
-                  verticalDirection: VerticalDirection.down,
-                  children: [...data],
-                )
-              : const OlderList(),
-        ),
-      ),
+  print(data);
+    return FutureBuilder(
+      future: getContacts(context).then((_) => setOlderAdd(context)),
+      builder: screen, 
+      initialData: const Center(child: CircularProgressIndicator()),
     );
   }
 }
@@ -238,8 +122,8 @@ Widget topic(String name, String uid, BuildContext context,
                         });
                   } else {
                     showDialog(
-                        context: context,
-                        builder: (context) {
+                      context: context,
+                      builder: (context) {
                           return AlertDialog(
                             title: const Text('Funcionário'),
                             content: Column(
@@ -249,17 +133,18 @@ Widget topic(String name, String uid, BuildContext context,
                                   onTap: () {
                                     // Navigator.pop(context);
                                     Navigator.pushNamed(context, '/chat',
-                                        arguments: {
-                                          // 'name': responsaveisData[i]['nome'],
-                                          'receiver': uid,
-                                          // 'photo': responsaveisData[i]['photo'],
-                                        });
+                                    arguments: {
+                                      // 'name': responsaveisData[i]['nome'],
+                                      'receiver': uid,
+                                      // 'photo': responsaveisData[i]['photo'],
+                                    });
                                   },
                                 )
                               ],
-                            ),
-                          );
-                        });
+                          ),
+                        );
+                      }
+                    );
                   }
                   // Navigator.pushNamed(context, '/chat',
                   //     arguments: {"receiver": uid});
@@ -269,7 +154,7 @@ Widget topic(String name, String uid, BuildContext context,
             Padding(
               padding: const EdgeInsets.only(left: 10),
               child: IconButton(
-                icon: Icon(Icons.medical_services_rounded),
+                icon: const Icon(Icons.medical_services_rounded),
                 onPressed: () {
                   Navigator.pushNamed(context, '/estoque',
                       arguments: {"elderId": uid});
@@ -281,60 +166,127 @@ Widget topic(String name, String uid, BuildContext context,
   );
 }
 
+Widget screen(BuildContext context, AsyncSnapshot<void> snapshot) {
+  int page = 0;
+  return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Help Elder"),
+          actions: veio,
+        ),
+        body: Center(
+          child: page == 0
+              ? Flex(
+                  direction: Axis.vertical,
+                  verticalDirection: VerticalDirection.down,
+                  children: [...data],
+                )
+              : const OlderList(),
+        ),
+      ),
+    );
+}
+
 Future<void> getContacts(BuildContext context) async {
   final prefs = await SharedPreferences.getInstance();
-  List<String> uids = [];
   if (prefs.getInt("typeAccount") == 0) {
     await db
-        .collection('idoso')
-        .where("idFunc", isEqualTo: auth.currentUser!.uid)
-        .get()
-        .then((value) => {
-              print(value.docs),
-              value.docs.forEach((older) {
-                if (older.data()['idResp'] != null) {
-                  if (uids
-                      .any((element) => element == older.data()['idResp'])) {
-                  } else {
-                    uids.add(older.data()['idResp']);
-                    db
-                        .doc('responsavel/${older.data()['idResp']}')
-                        .get()
-                        .then((value) => {
-                              print("encontrei: ${value.data()}"),
-                              data.add(topic(value.data()!['email'],
-                                  older.data()['idResp'], context)),
-                            });
-                  }
-                }
-              })
-            });
+    .collection('idoso')
+    .where("idFunc", isEqualTo: auth.currentUser!.uid)
+    .get()
+    .then((value) => {
+      print(value.docs),
+      print(auth.currentUser!.uid),
+      value.docs.forEach((older) {
+        data.add(topic(
+          older.data()['nome'],
+          older.id,
+          context,
+          responsaveis: older.data()['responsaveis'],
+        ));
+      })
+    });
   } else {
-    print('entrou');
     await db
-        .collection('idoso')
-        .where("responsaveis", arrayContains: auth.currentUser!.uid)
-        .get()
-        .then((value) => {
-              print(auth.currentUser!.uid),
-              value.docs.forEach((older) {
-                data.add(topic(
-                  older.data()['nome'],
-                  older.id,
-                  context,
-                  responsaveis: older.data()['responsaveis'],
-                ));
-                // if (older.data()['idFunc'] != null) {
-                //   db
-                //       .doc('funcionario/${older.data()['idFunc']}')
-                //       .get()
-                //       .then((value) => {
-                //             data.add(topic(value.data()!['email'],
-                //                 older.data()['idFunc'], context)),
-                //             print(value.data())
-                //           });
-                // }
-              })
-            });
+    .collection('idoso')
+    .where("responsaveis", arrayContains: auth.currentUser!.uid)
+    .get()
+    .then((value) => {
+      print(value.docs),
+      print(auth.currentUser!.uid),
+      value.docs.forEach((older) {
+        db.doc('funcionario/${older.data()['idFunc']}').get().then((value) => {
+          data.add(topic(
+            older.data()['nome'],
+            older.id,
+            context,
+            funcionario: value.data()!['nome'] ?? value.data()!['email'],
+          ))
+        });
+      })
+    });
+  }
+}
+
+Future<void> setOlderAdd(BuildContext context) async {
+  final prefs = await SharedPreferences.getInstance();
+
+  if (prefs.getInt('typeAccount') == 0) {
+    veio = [
+      IconButton(
+        onPressed: () {
+          Navigator.pushNamed(context, "/cadVeio");
+        },
+        icon: const Icon(Icons.add),
+      ),
+    ];
+  } else {
+    veio = [
+      IconButton(
+          onPressed: () {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  final TextEditingController cpfController =
+                      TextEditingController();
+                  return AlertDialog(
+                    title: const Text("Adicionar Idoso"),
+                    content: TextField(
+                      decoration: const InputDecoration(
+                        hintText: "Digite o CPF do idoso",
+                      ),
+                      controller: cpfController,
+                    ),
+                    actions: [
+                      TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Cancelar')),
+                      TextButton(
+                          onPressed: (() {
+                            db
+                                .collection('idoso')
+                                .where("cpf", isEqualTo: cpfController.text)
+                                .get()
+                                .then((value) => {
+                                      value.docs.forEach((element) {
+                                        db.doc('idoso/${element.id}').update({
+                                          'responsaveis':
+                                              FieldValue.arrayUnion(
+                                                  [auth.currentUser!.uid])
+                                        });
+                                      })
+                                    });
+                            avoidLoop = 0;
+                            Navigator.pop(context);
+                          }),
+                          child: const Text('Adicionar'))
+                    ],
+                  );
+                });
+          },
+          icon: const Icon(Icons.add)),
+    ];
   }
 }
