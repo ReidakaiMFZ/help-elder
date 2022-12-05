@@ -8,13 +8,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-
 FirebaseAuth auth = FirebaseAuth.instance;
 User? user = auth.currentUser;
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 FirebaseDatabase database = FirebaseDatabase.instance;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
-
 
 class Chat extends StatefulWidget {
   Chat({Key? key}) : super(key: key);
@@ -34,16 +32,18 @@ class ChatState extends State<Chat> {
         clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
         alignment: Alignment.topRight,
         margin: const EdgeInsets.only(top: 20),
-        backGroundColor: const Color(0xff007EF4),
-        child: Text(message),
+        backGroundColor: Color.fromARGB(255, 59, 138, 212),
+        child: Text(message,
+            style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
       ));
     } else {
       widget.messages.add(ChatBubble(
         clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
         alignment: Alignment.topLeft,
         margin: const EdgeInsets.only(top: 20),
-        backGroundColor: const Color(0xffE7E7ED),
-        child: Text(message),
+        backGroundColor: Color.fromARGB(255, 74, 173, 115),
+        child: Text(message,
+            style: TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
       ));
     }
   }
@@ -76,7 +76,6 @@ class ChatState extends State<Chat> {
 
   void getMessages() async {
     var serverMessages = [];
-
     var myMessages =
         database.ref('chats').orderByChild('sender').equalTo(user?.uid ?? '');
 
@@ -109,13 +108,13 @@ class ChatState extends State<Chat> {
   @override
   void initState() {
     super.initState();
-    getMessages();
+    // getMessages();
   }
 
   @override
   Widget build(BuildContext context) {
-
-    final arguments = (ModalRoute.of(context)?.settings.arguments ?? <String, dynamic>{}) as Map?;
+    final arguments = (ModalRoute.of(context)?.settings.arguments ??
+        <String, dynamic>{}) as Map?;
     return Scaffold(
       body: Stack(
         children: [
@@ -124,8 +123,36 @@ class ChatState extends State<Chat> {
             left: 0,
             right: 0,
             bottom: 50,
-            child: ListView(
-              children: [...widget.messages],
+            child: StreamBuilder(
+              stream: database
+                  .ref('chats')
+                  .orderByChild('time')
+                  .onValue
+                  .asBroadcastStream(),
+              builder: (context, snapshot) {
+                print('snapshot: $snapshot');
+                while (snapshot.connectionState == ConnectionState.active) {
+                  print((snapshot.data! as dynamic).snapshot.value);
+                  for (var doc
+                      in (snapshot.data! as dynamic).snapshot.value.values) {
+                    if (doc['sender'] == user?.uid ||
+                        doc['receiver'] == user?.uid) {
+                      createMessage(doc['message'], user?.uid == doc['sender']);
+                    }
+                    print(doc);
+                    // createMessage(doc['message'], user?.uid == doc['sender']);
+                  }
+                  return ListView(
+                    children: widget.messages,
+                  );
+                }
+                // var data = snapshot.data as Map<String, dynamic>;
+                // createMessage(data['message'], user?.uid == data['sender']);
+
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
             ),
           ),
           Positioned(
@@ -147,7 +174,8 @@ class ChatState extends State<Chat> {
                   onPressed: () {
                     setState(() {
                       if (messageController.text.isNotEmpty) {
-                        storeMessage(messageController.text, arguments!['receiver']);
+                        storeMessage(
+                            messageController.text, arguments!['receiver']);
                         messageController.clear();
                       }
                     });
