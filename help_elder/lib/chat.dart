@@ -132,6 +132,7 @@ class ChatState extends State<Chat> {
               builder: (context, snapshot) {
                 print('snapshot: $snapshot');
                 while (snapshot.connectionState == ConnectionState.active) {
+                  widget.messages.clear();
                   print((snapshot.data! as dynamic).snapshot.value);
                   for (var doc
                       in (snapshot.data! as dynamic).snapshot.value.values) {
@@ -174,8 +175,8 @@ class ChatState extends State<Chat> {
                   onPressed: () {
                     setState(() {
                       if (messageController.text.isNotEmpty) {
-                        storeMessage(
-                            messageController.text, arguments!['receiver']);
+                        storeMessage(messageController.text,
+                            arguments!['receiver'] ?? auth.currentUser!.uid);
                         messageController.clear();
                       }
                     });
