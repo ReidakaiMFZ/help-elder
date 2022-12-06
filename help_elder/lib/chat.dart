@@ -134,14 +134,19 @@ class ChatState extends State<Chat> {
                 while (snapshot.connectionState == ConnectionState.active) {
                   widget.messages.clear();
                   print((snapshot.data! as dynamic).snapshot.value);
+                  var docs = [];
                   for (var doc
                       in (snapshot.data! as dynamic).snapshot.value.values) {
                     if (doc['sender'] == user?.uid ||
                         doc['receiver'] == user?.uid) {
-                      createMessage(doc['message'], user?.uid == doc['sender']);
+                      docs.add(doc);
                     }
                     print(doc);
                     // createMessage(doc['message'], user?.uid == doc['sender']);
+                  }
+                  docs.sort((a, b) => a['time'].compareTo(b['time']));
+                  for (var doc in docs) {
+                    createMessage(doc['message'], user?.uid == doc['sender']);
                   }
                   return ListView(
                     children: widget.messages,

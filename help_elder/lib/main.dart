@@ -18,7 +18,7 @@ import 'package:help_elder/estoque.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
-const bool DEBUG = true;
+const bool DEBUG = false;
 
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
