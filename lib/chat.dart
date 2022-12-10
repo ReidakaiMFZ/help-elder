@@ -8,10 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-
 FirebaseAuth auth = FirebaseAuth.instance;
 User? user = auth.currentUser;
-String receiver = "MTV48ahFfTeUq7rr0FFWJXvz2HA3";
 FirebaseFirestore firestore = FirebaseFirestore.instance;
 FirebaseDatabase database = FirebaseDatabase.instance;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -29,34 +27,35 @@ class Chat extends StatefulWidget {
 class ChatState extends State<Chat> {
   final TextEditingController messageController = TextEditingController();
   void createMessage(String message, bool isMe) {
-    print("$message $isMe");
     if (isMe) {
       widget.messages.add(ChatBubble(
         clipper: ChatBubbleClipper1(type: BubbleType.sendBubble),
         alignment: Alignment.topRight,
         margin: const EdgeInsets.only(top: 20),
-        backGroundColor: const Color(0xff007EF4),
-        child: Text(message),
+        backGroundColor: const Color.fromARGB(255, 59, 138, 212),
+        child: Text(message,
+            style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
       ));
     } else {
       widget.messages.add(ChatBubble(
         clipper: ChatBubbleClipper1(type: BubbleType.receiverBubble),
         alignment: Alignment.topLeft,
         margin: const EdgeInsets.only(top: 20),
-        backGroundColor: const Color(0xffE7E7ED),
-        child: Text(message),
+        backGroundColor: const Color.fromARGB(255, 74, 173, 115),
+        child: Text(message,
+            style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255))),
       ));
     }
   }
 
-  void storeMessage(String message) {
+  void storeMessage(String message, String receiver) {
     if (messageController.text.isNotEmpty) {
       // final colecao = firestore.collection('messages');
       // colecao.add(
       //   {
       //     'message': message,
       //     'sender': user!.uid,
-      //     'receiver': '',
+      //     'receiver': receiver,
       //     'time': DateTime.now().millisecondsSinceEpoch,
       //   }
       // );
@@ -76,22 +75,15 @@ class ChatState extends State<Chat> {
   }
 
   void getMessages() async {
-    // final myMessages = firestore
-    //     .collection('messages')
-    //     .where("sender", isEqualTo: user!.uid)
-    //     .orderBy('time');
     var serverMessages = [];
-
     var myMessages =
         database.ref('chats').orderByChild('sender').equalTo(user?.uid ?? '');
 
     await myMessages.once().then((querySnapshot) async {
       for (var doc in querySnapshot.snapshot.children) {
         var message = await doc.ref.get();
-        print(message.value as dynamic);
         serverMessages.add(message.value as dynamic);
       }
-      print(serverMessages);
     });
 
     myMessages =
@@ -109,7 +101,6 @@ class ChatState extends State<Chat> {
     setState(() {
       for (var message in serverMessages) {
         createMessage((message)['message'], user?.uid == (message)['sender']);
-        print(message.toString());
       }
     });
   }
@@ -117,23 +108,13 @@ class ChatState extends State<Chat> {
   @override
   void initState() {
     super.initState();
-    print("object");
-    getMessages();
+    // getMessages();
   }
 
   @override
   Widget build(BuildContext context) {
-    // final docRef = firestore.collection("messages");
-
-    // docRef.snapshots().listen(
-    //   (event) {
-    //     var element = event.docs.last;
-    //     if (element.data()['sender'] != user!.uid) {
-    //       createMessage(element.data()['message'], false);
-    //     }
-    //   },
-    // );
-
+    final arguments = (ModalRoute.of(context)?.settings.arguments ??
+        <String, dynamic>{}) as Map?;
     return Scaffold(
       body: Stack(
         children: [
@@ -142,8 +123,42 @@ class ChatState extends State<Chat> {
             left: 0,
             right: 0,
             bottom: 50,
-            child: ListView(
-              children: [...widget.messages],
+            child: StreamBuilder(
+              stream: database
+                  .ref('chats')
+                  .orderByChild('time')
+                  .onValue
+                  .asBroadcastStream(),
+              builder: (context, snapshot) {
+                print('snapshot: $snapshot');
+                while (snapshot.connectionState == ConnectionState.active) {
+                  widget.messages.clear();
+                  print((snapshot.data! as dynamic).snapshot.value);
+                  var docs = [];
+                  for (var doc
+                      in (snapshot.data! as dynamic).snapshot.value.values) {
+                    if (doc['sender'] == user?.uid ||
+                        doc['receiver'] == user?.uid) {
+                      docs.add(doc);
+                    }
+                    print(doc);
+                    // createMessage(doc['message'], user?.uid == doc['sender']);
+                  }
+                  docs.sort((a, b) => a['time'].compareTo(b['time']));
+                  for (var doc in docs) {
+                    createMessage(doc['message'], user?.uid == doc['sender']);
+                  }
+                  return ListView(
+                    children: widget.messages,
+                  );
+                }
+                // var data = snapshot.data as Map<String, dynamic>;
+                // createMessage(data['message'], user?.uid == data['sender']);
+
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
             ),
           ),
           Positioned(
@@ -165,7 +180,8 @@ class ChatState extends State<Chat> {
                   onPressed: () {
                     setState(() {
                       if (messageController.text.isNotEmpty) {
-                        storeMessage(messageController.text);
+                        storeMessage(messageController.text,
+                            arguments!['receiver'] ?? auth.currentUser!.uid);
                         messageController.clear();
                       }
                     });

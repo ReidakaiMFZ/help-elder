@@ -1,17 +1,27 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// ignore_for_file: invalid_return_type_for_catch_error, library_private_types_in_public_api
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: prefer_const_literals_to_create_immutables
 
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 final FirebaseAuth auth = FirebaseAuth.instance;
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+   int typeLogin = 0;
   @override
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passController = TextEditingController();
+    
     AlertDialog alert = AlertDialog(
       title: Text("Error"),
       content: Text("Invalid Email or Password"),
@@ -77,6 +87,30 @@ class Login extends StatelessWidget {
                   controller: passController,
                 ),
               ),
+               SizedBox(
+                width: 350,
+                child: DropdownButton(
+                  value: typeLogin,
+                  onChanged: (int? value) {
+                    setState(() => typeLogin = value!);
+                  },
+                  underline: Container(
+                    height: 1,
+                    color: Colors.black38,
+                  ),
+                  items: const [
+                    DropdownMenuItem(
+                      value: 0,
+                      child: Text('Cuidador'),
+                    ),
+                    DropdownMenuItem(
+                      value: 1,
+                      child: Text('Responsável'),
+                    ),
+                  ], 
+
+                ),
+              ),
               SizedBox(
                 height: 100,
                 child: Column(
@@ -92,24 +126,40 @@ class Login extends StatelessWidget {
                             borderRadius: BorderRadius.circular(32.0),
                           ),
                         )),
-                        child: const Text('Login',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                        onPressed: () {
-                          auth
-                              .signInWithEmailAndPassword(
-                                  email: emailController.text,
-                                  password: passController.text)
-                              .then((x) => {
-                                    Navigator.of(context).pop(),
-                                    Navigator.pushNamed(context, '/home'),
-                                  })
-                              .catchError((e) => {
-                                    showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) =>
-                                            alert)
-                                  });
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 20, 
+                            fontWeight: FontWeight.bold
+                          )),
+                        onPressed: () async {
+                          final prefs = await SharedPreferences.getInstance();
+                          auth.signInWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passController.text)
+                          .then((x) => {
+                            if (typeLogin == 0){
+                              prefs.setInt("typeAccount", 0),
+                      
+                              Navigator.of(context).pop(),
+                              Navigator.pushNamed(context, '/home', arguments: {
+                                "typeAccount": 0,
+                              }),
+                            }
+                            else{
+                              prefs.setInt("typeAccount", 1),
+                              Navigator.of(context).pop(),
+                              Navigator.pushNamed(context, '/home', arguments: {
+                                "typeAccount": 1,
+                              }),
+                            }
+                          })
+                          .catchError((e) => {
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) =>
+                                    alert)
+                          });
                         },
                       ),
                     ),

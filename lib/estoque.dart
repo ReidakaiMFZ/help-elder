@@ -1,25 +1,24 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, no_logic_in_create_state
+// Cspell:ignore firestore
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 final FirebaseFirestore db = FirebaseFirestore.instance;
-// Cspell:ignore firestore
 
 Future<List<Medicine>> getMedicine(String id) async {
-  var value =
-      await db.collection('idoso').get().then((QuerySnapshot querySnapshot) {
-    for (var doc in querySnapshot.docs) {
-      if (doc.id == id) {
-        print(doc['medicines'][0]['name']);
-        return doc.get('medicines');
-      }
-    }
+  print("entreilis");
+  late final value;
+  await db.doc("idoso/$id").get().then((snapshot) {
+    value = snapshot.data()?['medicines'] ?? [];
   });
+  if (value == null) return [];
   return List<_Medicine>.from(value)
       .map((e) => Medicine(e['name'], e['qtd'], e['consume']))
       .toList();
 }
 
-const elderId = 'aGbRsMpZJVOFApgdyVPi';
+// const elderId = 'aGbRsMpZJVOFApgdyVPi';
 typedef _Medicine = Map<String, dynamic>;
 
 class Medicine {
@@ -36,10 +35,11 @@ void publishMedicine(String id, List<Medicine> medicines) {
   });
 }
 
-void addMedicine() {}
-
 class Inventory extends StatefulWidget {
-  const Inventory({super.key});
+
+  const Inventory({
+    super.key,
+  });
 
   @override
   State<Inventory> createState() => _InventoryState();
@@ -50,15 +50,27 @@ class _InventoryState extends State<Inventory> {
   @override
   void initState() {
     super.initState();
-    getMedicine(elderId).then((value) => setState(() {
-          medicines = value;
-        }));
   }
 
   @override
   Widget build(BuildContext context) {
-    if (medicines != null) {
+    final args = ModalRoute.of(context)!.settings.arguments as Map?;
+    return FutureBuilder(
+      future: getMedicine(args!['elderId']).then((value) {
+        print(value);
+        medicines = value;
+      }),
+      builder: screen
+    );
+}
+
+Widget screen(BuildContext context, AsyncSnapshot snapshot){
+  final args = ModalRoute.of(context)!.settings.arguments as Map?;
+  if (medicines != null) {
       return Scaffold(
+        appBar: AppBar(
+          title: const Text('Estoque'),
+        ),
         body: SingleChildScrollView(
           child: Column(children: [
             SizedBox(
@@ -130,7 +142,7 @@ class _InventoryState extends State<Inventory> {
                                             int.parse(consumeController.text);
                                       });
                                       publishMedicine(
-                                          elderId, medicines!);
+                                          args!['elderId'], medicines!);
                                       Navigator.pop(context);
                                     },
                                     child: const Text('Salvar'),
@@ -198,7 +210,7 @@ class _InventoryState extends State<Inventory> {
                                 int.parse(qtdController.text),
                                 int.parse(consumeController.text)));
                           });
-                          publishMedicine('aGbRsMpZJVOFApgdyVPi', medicines!);
+                          publishMedicine(args!['elderId'], medicines!);
                           Navigator.pop(context);
                         } else {
                           showDialog(
@@ -239,26 +251,5 @@ class _InventoryState extends State<Inventory> {
         ),
       );
     }
-    // create a list with the medicines
-    // return FutureBuilder(
-    //     //Cspell:ignore aGbRsMpZJVOFApgdyVPi
-    //     future: getMedicine('aGbRsMpZJVOFApgdyVPi'),
-    //     builder: ((context, snapshot) {
-    //       if (snapshot.hasData) {
-    //         ListView.builder(
-    //           itemCount: (snapshot.data as List<Medicine>).length,
-    //           itemBuilder: (context, index) {
-    //             return ListTile(
-    //               title: Text((snapshot.data as List<Medicine>)[index].name),
-    //               subtitle: Text(
-    //                   (snapshot.data as List<Medicine>)[index].qtd.toString()),
-    //             );
-    //           },
-    //         );
-    //       } else {
-    //         return const Center(child: CircularProgressIndicator());
-    //       }
-    //       throw UnimplementedError();
-    //     }));
   }
 }

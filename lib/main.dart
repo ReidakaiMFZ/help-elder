@@ -1,9 +1,12 @@
 // import 'package:firebase_messaging/firebase_messaging.dart';
+// ignore_for_file: constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:help_elder/login.dart';
 import 'package:help_elder/cadastro_resp.dart';
@@ -15,10 +18,12 @@ import 'package:help_elder/estoque.dart';
 
 FirebaseAuth auth = FirebaseAuth.instance;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
+const bool DEBUG = true;
+
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print("Handling a background message: ${message.messageId}"); 
+  print("Received a background message: ${message.messageId}"); 
 }
 
 void main() async {
@@ -27,13 +32,14 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+  getBackVar();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
+  
   runApp(MaterialApp(
-    home: const Test(),
+    home: DEBUG ? const Test() : auth.currentUser == null ? const Login() : const Home(),
+    debugShowCheckedModeBanner: DEBUG,
     routes: <String, WidgetBuilder>{
-      '/home': (context) =>  auth.currentUser == null ? const Login(): const Home(),
+      '/home': (context) =>  const Home(),
       '/login': (context) => const Login(),
       '/cadResp': (context) => const CadastroResp(),
       '/cadFunc': (context) => const CadastroFunc(),
@@ -43,10 +49,13 @@ void main() async {
     },
   ));
 }
-
+void getBackVar() async {
+  final prefs = await SharedPreferences.getInstance();
+  print("Login type: ${prefs.getInt("typeAccount")}");
+  print("Can reload? ${prefs.getBool("reload")}");
+}
 class Test extends StatelessWidget {
   const Test({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -97,8 +106,22 @@ class Test extends StatelessWidget {
                 child: const Text("chat"),
               ),
               ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/estoque'),
-                  child: const Text("Estoque")),
+                onPressed: () => Navigator.pushNamed(context, '/estoque'),
+                child: const Text("Estoque")
+              ),
+               ElevatedButton(
+                onPressed: () {
+                  getBackVar();
+                },
+                child: const Text("Ver tipo de login")
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  auth.signOut();
+                  print("saiu");
+                },
+                child: const Text("Sair")
+              ),
             ],
           ),
         ),
