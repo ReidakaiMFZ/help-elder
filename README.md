@@ -34,9 +34,9 @@ Depois que o merge da sua pull request for feito, você pode deletar a sua branc
 - [Guilherme Luz](https://github.com/GuilhermePereirz)
 - [Gustavo Oliveira](https://github.com/oliveira533)
 - [Juan Vargas](https://github.com/Var-Argas)
-- [Richard Sanches](https://github.com/reidakaimfz)
+- [Richard Sanches](https://github.com/Richardsan1)
 
 ## licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](https://github.com/ReidakaiMFZ/help-elder/blob/main/LICENSE.md) para mais detalhes.
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](https://github.com/Richardsan1/help-elder/blob/main/LICENSE.md) para mais detalhes.
 
